@@ -23,7 +23,7 @@ private:
 public:
 	uint64_t runtimeId;    //0x0550
 private:
-	virtual auto Function0(void) -> void;
+    virtual auto Function0(void) -> void;
     virtual auto Function1(void) -> void;
     virtual auto Function2(void) -> void;
     virtual auto Function3(void) -> void;
@@ -33,7 +33,7 @@ private:
 public:
     virtual auto outOfWorld(void) -> bool;
 private:
-	virtual auto Function8(void) -> void;
+    virtual auto Function8(void) -> void;
     virtual auto Function9(void) -> void;
     virtual auto Function10(void) -> void;
     virtual auto Function11(void) -> void;
