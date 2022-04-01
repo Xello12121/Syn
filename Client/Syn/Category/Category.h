@@ -16,6 +16,8 @@ public:
 public:
     Category(Manager*, std::string);
 public:
+    auto baseTick(void) -> void;
+public:
     auto getModule(std::string) -> Module*;
     auto getModule(size_t) -> Module*;
 };

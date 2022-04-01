@@ -1,9 +1,18 @@
 #include "Category.h"
+
+#include "../Manager/Manager.h"
 #include "../Module/Module.h"
 
 Category::Category(Manager* manager, std::string name) {
     this->manager = manager;
     this->name = name;
+
+    manager->categories.push_back(this);
+};
+
+auto Category::baseTick(void) -> void {
+    for(auto m : this->modules)
+        m->baseTick();
 };
 
 auto Category::getModule(std::string name) -> Module* {
