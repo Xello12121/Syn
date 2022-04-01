@@ -46,6 +46,11 @@ public:
     virtual auto getOwnerEntityType(void) -> int;
     virtual auto remove(void) -> void;
     virtual auto setPos(Vec3<float>*) -> void;
+private:
+    virtual auto Function20(void) -> void;
+    virtual auto Function21(void) -> void;
+public:
+    virtual auto getPos(void) -> Vec3<float>*;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
