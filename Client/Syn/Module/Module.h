@@ -1,8 +1,7 @@
 #ifndef CLIENT_SYN_MODULE_MODULE
 #define CLIENT_SYN_MODULE_MODULE
 
-#include "../../Utils/Utils.h"
-#include "../../Mem/Mem.h"
+#include "../../SDK/Minecraft.h"
 
 class Category;
 

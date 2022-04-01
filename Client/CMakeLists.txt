@@ -3,5 +3,6 @@ target_sources(Syn PRIVATE
 )
 
 add_subdirectory(Syn)
+add_subdirectory(SDK)
 add_subdirectory(Mem)
 add_subdirectory(Utils)
