@@ -6,5 +6,8 @@ auto TestModule::onTick(void) -> void {
     if(localPlayer == nullptr)
         return;
     
-    localPlayer->velocity.y = 0.f;
+    auto lerpTo = Vec3<float>(0, .4f, 0);
+    localPlayer->lerpMotion(&lerpTo);
+    
+    this->isEnabled = false;
 };
