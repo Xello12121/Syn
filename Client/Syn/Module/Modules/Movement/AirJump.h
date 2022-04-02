@@ -6,7 +6,7 @@
 class AirJump : public Module {
 public:
     AirJump(Category* c) : Module(c, "AirJump") {
-        this->isEnabled = true;
+        //
     };
 public:
     auto onTick(void) -> void override;
