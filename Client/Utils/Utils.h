@@ -41,4 +41,29 @@ public:
     };
 };
 
+template<typename T>
+class Vec4 : public Vec3<T> {
+public:
+    T w;
+public:
+    Vec4(T x = 0, T y = 0, T z = 0, T w = 0) {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+        this->w = w;
+    };
+};
+
+template<typename T>
+class AABB {
+public:
+    T a;
+    T b;
+public:
+    AABB(Vec3<T> vA, Vec3<T> vB) {
+        this->a = vA;
+        this->b = vB;
+    };
+};
+
 #endif /* UTILS_UTILS */
