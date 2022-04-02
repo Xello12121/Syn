@@ -5,9 +5,6 @@ auto TestModule::onTick(void) -> void {
 
     if(localPlayer == nullptr)
         return;
-    
-    auto lerpTo = Vec3<float>(0, .4f, 0);
-    localPlayer->lerpMotion(&lerpTo);
-    
+
     this->isEnabled = false;
 };
