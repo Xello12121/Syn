@@ -81,6 +81,35 @@ public:
     virtual auto tryTeleportTo(Vec3<float>*, bool, bool, int, int) -> void;
     virtual auto chorusFruitTeleport(Vec3<float>*) -> void;
     virtual auto lerpMotion(Vec3<float>*) -> void;
+    virtual auto tryCreateAddActorPacket(void) -> __int64;
+    virtual auto normalTick(void) -> void;
+    virtual auto baseTick(void) -> void;
+    virtual auto vehicleTick(void) -> void;
+    virtual auto positionPassenger(Actor*, float) -> void;
+    virtual auto getRidingHeight(void) -> float;
+    virtual auto startRiding(Actor*) -> bool;
+    virtual auto addPassenger(Actor*) -> void;
+    virtual auto flagPassengerToRemove(Actor*) -> void;
+private:
+    virtual auto Function56(void) -> void;
+public:
+    virtual auto intersects(Vec3<float>*, Vec3<float>*) -> bool;
+    virtual auto isInWall(void) -> bool;
+    virtual auto isInvisible(void) -> bool;
+    virtual auto canShowNameTag(void) -> bool;
+private:
+    virtual auto Function61(void) -> void;
+public:
+    virtual auto setNameTagVisible(bool) -> void;
+    virtual auto getNameTag(void) -> std::string;
+    virtual auto getNameTagAsHash(void) -> unsigned __int64;
+    virtual auto getFormattedNameTag(void) -> std::string;
+    virtual auto filterFormattedNameTag(uintptr_t*) -> void;
+    virtual auto setNameTag(std::string) -> void;
+private:
+    virtual auto Function68(void) -> void;
+public:
+    virtual auto setScoreTag(std::string, int) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
