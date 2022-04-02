@@ -109,7 +109,7 @@ public:
 private:
     virtual auto Function68(void) -> void;
 public:
-    virtual auto setScoreTag(std::string, int) -> void;
+    virtual auto setScoreTag(std::string, std::allocator<char>) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
