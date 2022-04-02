@@ -51,6 +51,36 @@ private:
     virtual auto Function21(void) -> void;
 public:
     virtual auto getPos(void) -> Vec3<float>*;
+    virtual auto getPosOld(void) -> Vec3<float>*;
+    virtual auto getPosExtrapolated(float) -> Vec3<float>;
+    virtual auto getAttachPos(int, float) -> Vec3<float>;
+    virtual auto getFiringPos(void) -> Vec3<float>;
+    virtual auto setRot(Vec2<float>*) -> void;
+    virtual auto move(uintptr_t*, Vec3<float>*) -> void;
+    virtual auto move(Vec3<float>*) -> void;
+    virtual auto getInterpolatedRidingPosition(float) -> Vec3<float>;
+    virtual auto getInterpolatedBodyRot(float) -> float;
+private:
+    virtual auto Function32(void) -> void;
+    virtual auto Function33(void) -> void;
+public:
+    virtual auto getYawSpeedInDegreesPerSecond(void) -> float;
+    virtual auto getInterpolatedWalkAnimSpeed(float) -> float;
+    virtual auto getWorldPosition(void) -> Vec3<float>;
+private:
+    virtual auto Function37(void) -> void;
+public:
+    virtual auto updateEntityInside(void) -> void;
+    virtual auto updateEntityInside(AABB<float>*) -> void;
+    virtual auto isFireImmune(void) -> bool;
+private:
+    virtual auto Function41(void) -> void;
+public:
+    virtual auto blockedByShield(uintptr_t*, Actor*) -> void;
+    virtual auto teleportTo(Vec3<float>*, bool, int, int) -> void;
+    virtual auto tryTeleportTo(Vec3<float>*, bool, bool, int, int) -> void;
+    virtual auto chorusFruitTeleport(Vec3<float>*) -> void;
+    virtual auto lerpMotion(Vec3<float>*) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
