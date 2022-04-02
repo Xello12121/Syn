@@ -15,9 +15,9 @@ private:
 public:
 	Vec3<float> pos;       //0x04D8
 private:
-	char pad_04E4[16];     //0x04E4
+	char pad_04E4[12];     //0x04E4
 public:
-	Vec2<float> velocity;  //0x04F4
+	Vec3<float> velocity;  //0x04F0
 private:
 	char pad_04FC[84];     //0x04FC
 public:
