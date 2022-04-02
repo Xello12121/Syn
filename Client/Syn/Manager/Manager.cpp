@@ -9,6 +9,7 @@ Manager::Manager(Client* client) {
 };
 
 #include "../Module/Modules/Movement/AirJump.h"
+#include "../Module/Modules/Misc/TestMod.h"
 
 auto Manager::init(void) -> void {
     if(this->categories.empty()) {
@@ -66,7 +67,7 @@ auto Manager::init(void) -> void {
     auto misc = this->getCategory("Misc");
 
     if(misc != nullptr) {
-        /* Add Modules */
+        new TestModule(misc);
     };
 
     for(;;) {
