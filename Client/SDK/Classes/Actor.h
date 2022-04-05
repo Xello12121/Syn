@@ -109,7 +109,111 @@ public:
 private:
     virtual auto Function68(void) -> void;
 public:
-    virtual auto setScoreTag(std::string, std::allocator<char>) -> void;
+    virtual auto setScoreTag(std::string) -> void;
+    virtual auto getScoreTag(void) -> std::string;
+    virtual auto isInWater(void) -> bool;
+    virtual auto hasEnteredWater(void) -> bool;
+    virtual auto isInLava(void) -> bool;
+    virtual auto isUnderLiquid(int) -> bool;
+    virtual auto isOverWater(void) -> bool;
+    virtual auto setBlockMovementSlowdownMultiplier(Vec3<float>*) -> void;
+    virtual auto resetBlockMovementSlowdownMultiplier(void) -> void;
+    virtual auto getCameraOffset(void) -> float;
+    virtual auto getShadowHeightOffs(void) -> float;
+    virtual auto getShadowRadius(void) -> float;
+    virtual auto getHeadLookVector(float) -> Vec3<float>;
+private:
+    virtual auto Function82(void) -> void;
+public:
+    virtual auto canSee(Vec3<float>*) -> bool;
+    virtual auto canSee(Actor*) -> bool;
+    virtual auto isSkyLit(float) -> bool;
+    virtual auto getBrightness(float) -> float;
+private:
+    virtual auto Function87(void) -> void;
+    virtual auto Function88(void) -> void;
+public:
+    virtual auto onAboveBubbleColumn(bool) -> void;
+    virtual auto onInsideBubbleColumn(bool) -> void;
+    virtual auto isImmobile(void) -> bool;
+    virtual auto isSilent(void) -> bool;
+    virtual auto isPickable(void) -> bool;
+private:
+    virtual auto Function94(void) -> void;
+public:
+    virtual auto isSleeping(void) -> bool;
+    virtual auto setSleeping(bool) -> void;
+private:
+    virtual auto Function97(void) -> void;
+public:
+    virtual auto setSneaking(bool) -> void;
+    virtual auto isBlocking(void) -> bool;
+    virtual auto isDamageBlocked(uintptr_t*) -> bool;
+    virtual auto isAlive(void) -> bool;
+    virtual auto isOnFire(void) -> bool;
+    virtual auto isOnHotBlock(void) -> bool;
+private:
+    virtual auto Function104(void) -> void;
+public:
+    virtual auto isSurfaceMob(void) -> bool;
+private:
+    virtual auto Function106(void) -> void;
+    virtual auto Function107(void) -> void;
+    virtual auto Function108(void) -> void;
+public:
+    virtual auto isAffectedByWaterBottle(void) -> bool;
+    virtual auto canAttack(Actor*, bool) -> bool;
+    virtual auto setTarget(Actor*) -> void;
+private:
+    virtual auto Function112(void) -> void;
+public:
+    virtual auto isValidTarget(Actor*) -> bool;
+    virtual auto attack(Actor*, int*) -> bool;
+    virtual auto performRangedAttack(Actor*, float) -> void;
+    virtual auto adjustDamageAmount(int*) -> void;
+    virtual auto getEquipmentCount(void) -> __int64;
+    virtual auto setOwner(__int64) -> void;
+    virtual auto setSitting(bool) -> void;
+private:
+    virtual auto Function120(void) -> void;
+    virtual auto Function121(void) -> void;
+public:
+    virtual auto getInventorySize(void) -> __int64;
+    virtual auto getEquipSlots(void) -> __int64;
+    virtual auto getChestSlots(void) -> __int64;
+    virtual auto setStanding(bool) -> void;
+    virtual auto canPowerJump(void) -> bool;
+    virtual auto setCanPowerJump(bool) -> void;
+    virtual auto isJumping(void) -> bool;
+    virtual auto isEnchanted(void) -> bool;
+private:
+    virtual auto Function130(void) -> void;
+public:
+    virtual auto shouldRender(void) -> bool;
+    virtual auto playAmbientSound(void) -> void;
+    virtual auto getAmbientSound(void) -> int;
+    virtual auto isInvulnerableTo(uintptr_t*) -> bool;
+    virtual auto getBlockDamageCause(uintptr_t const &) -> int;
+    virtual auto actuallyHurt(int, uintptr_t*, bool) -> void;
+    virtual auto animateHurt(void) -> void;
+    virtual auto doFireHurt(int) -> bool;
+    virtual auto onLightningHit(void) -> void;
+    virtual auto onBounceStarted(Vec3<int>*, uintptr_t*) -> void;
+    virtual auto feed(int) -> void;
+    virtual auto handleEntityEvent(int, int) -> void;
+    virtual auto getPickRadius(void) -> float;
+    virtual auto getActorRendererId(void) -> __int64;
+    virtual auto spawnAtLocation(uintptr_t*, float) -> uintptr_t*;
+    virtual auto spawnAtLocation(uintptr_t*, int, float) -> uintptr_t*;
+    virtual auto spawnAtLocation(uintptr_t*, int) -> uintptr_t*;
+    virtual auto spawnAtLocation(int, int, float) -> uintptr_t*;
+    virtual auto spawnAtLocation(int, int) -> uintptr_t*;
+    virtual auto despawn(void) -> void;
+    virtual auto killed(Actor*) -> void;
+    virtual auto awardKillScore(Actor*, int) -> void;
+    virtual auto setArmor(int, uintptr_t*) -> void;
+    virtual auto getArmor(int) -> uintptr_t;
+    virtual auto getAllArmor(void) -> std::vector<uintptr_t*>;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
