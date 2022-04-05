@@ -5,6 +5,9 @@ auto TestModule::onTick(void) -> void {
 
     if(localPlayer == nullptr)
         return;
+    
+    localPlayer->setScoreTag("Test");
+    Utils::debugLog(localPlayer->getScoreTag());
 
     this->isEnabled = false;
 };
