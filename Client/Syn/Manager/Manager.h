@@ -6,6 +6,7 @@
 
 class Client;
 class Category;
+class Actor;
 
 class Manager {
 public:
@@ -13,8 +14,11 @@ public:
 public:
     std::vector<Category*> categories;
 public:
+    std::map<uint64_t, Actor*> entityMap;
+public:
     Manager(Client*);
 public:
+    auto initHooks(void) -> void;
     auto init(void) -> void;
 public:
     auto getCategory(std::string) -> Category*;
