@@ -277,6 +277,27 @@ public:
     virtual auto stopRiding(bool, bool, bool) -> void;
     virtual auto startSwimming(void) -> void;
     virtual auto stopSwimming(void) -> void;
+private:
+    virtual auto Function203(void) -> void;
+public:
+    virtual auto getCommandPermissionLevel(void) -> int;
+    virtual auto isClientSide(void) -> bool;
+    virtual auto getMutableAttribute(uintptr_t*) -> uintptr_t*;
+    virtual auto getAttribute(uintptr_t*) -> uintptr_t*;
+    virtual auto getDeathTime(void) -> __int64;
+    virtual auto heal(int) -> void;
+    virtual auto isInvertedHealAndHarm(void) -> bool;
+    virtual auto canBeAffected(uintptr_t*) -> bool;
+    virtual auto canBeAffected(int) -> bool;
+    virtual auto canBeAffectedByArrow(uintptr_t*) -> bool;
+private:
+    virtual auto Function214(void) -> void;
+    virtual auto Function215(void) -> void;
+    virtual auto Function216(void) -> void;
+public:
+    virtual auto getAnimationComponent(void) -> uintptr_t*;
+    virtual auto openContainerComponent(Actor*) -> void;
+    virtual auto swing(void) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
