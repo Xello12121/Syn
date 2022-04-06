@@ -214,6 +214,69 @@ public:
     virtual auto setArmor(int, uintptr_t*) -> void;
     virtual auto getArmor(int) -> uintptr_t;
     virtual auto getAllArmor(void) -> std::vector<uintptr_t*>;
+    virtual auto getArmorMaterialTypeInSlot(int) -> int;
+    virtual auto getArmorMaterialTextureTypeInSlot(int) -> int;
+    virtual auto getArmorColorInSlot(int, int) -> float;
+    virtual auto getEquippedSlot(int) -> uintptr_t*;
+    virtual auto setEquippedSlot(int, uintptr_t*) -> void;
+    virtual auto getSelectedItem(void) -> uintptr_t*;
+    virtual auto setCarriedItem(uintptr_t*) -> void;
+    virtual auto setOffhandSlot(uintptr_t*) -> void;
+    virtual auto getEquippedTotem(void) -> uintptr_t*;
+    virtual auto consumeTotem(void) -> void;
+private:
+    virtual auto Function166(void) -> void;
+    virtual auto Function167(void) -> void;
+    virtual auto Function168(void) -> void;
+    virtual auto Function169(void) -> void;
+public:
+    virtual auto getEntityTypeId(void) -> uint8_t;
+private:
+    virtual auto Function171(void) -> void;
+public:
+    virtual auto getSourceUniqueID(void) -> __int64;
+    virtual auto thawFreezeEffect(void) -> void;
+    virtual auto canFreeze(void) -> bool;
+    virtual auto isWearingLeatherArmor(void) -> bool;
+    virtual auto getLiquidAABB(int) -> AABB<float>;
+    virtual auto handleInsidePortal(Vec3<int>*) -> void;
+private:
+    virtual auto Function178(void) -> void;
+public:
+    virtual auto getPortalWaitTime(void) -> __int64;
+    virtual auto getDimensionId(void) -> __int64;
+    virtual auto canChangeDimensions(void) -> bool;
+private:
+    virtual auto Function182(void) -> void;
+public:
+    virtual auto changeDimension(__int64, int) -> __int64;
+    virtual auto getControllingPlayer(void) -> __int64;
+    virtual auto checkFallDamage(float, bool) -> void;
+    virtual auto causeFallDamage(float, float, __int64) -> void;
+    virtual auto handleFallDistanceOnServer(float, float, bool) -> void;
+    virtual auto playSynchronizedSound(int, Vec3<float>, int, bool) -> void;
+    virtual auto playSynchronizedSound(int, Vec3<float>, __int64, bool) -> void;
+private:
+    virtual auto Function190(void) -> void;
+    virtual auto Function191(void) -> void;
+public:
+    virtual auto canAddPassenger(Actor*) -> bool;
+private:
+    virtual auto Function193(void) -> void;
+    virtual auto Function194(void) -> void;
+public:
+    virtual auto inCaravan(void) -> bool;
+private:
+    virtual auto Function196(void) -> void;
+public:
+    virtual auto tickLeash(void) -> void;
+private:
+    virtual auto Function198(void) -> void;
+    virtual auto Function199(void) -> void;
+public:
+    virtual auto stopRiding(bool, bool, bool) -> void;
+    virtual auto startSwimming(void) -> void;
+    virtual auto stopSwimming(void) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
