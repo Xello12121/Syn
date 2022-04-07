@@ -3,15 +3,10 @@
 #include "../../../Manager/Manager.h"
 
 auto TestModule::onTick(void) -> void {
-    auto localPlayer = MC::getLocalPlayer();
+    auto entities = this->category->manager->entityMap;
 
-    if(localPlayer == nullptr)
+    if(entities.empty())
         return;
-    
-    for(auto [runtimeId, entity] : this->category->manager->entityMap) {
-        if(runtimeId == localPlayer->runtimeId)
-            continue;
-        
-        entity->setTarget(localPlayer);
-    };
+
+    Utils::debugLog(std::string("Entities: " + std::to_string(entities.size())));
 };
