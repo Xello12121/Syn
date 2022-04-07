@@ -1,6 +1,8 @@
 #ifndef CLIENT_SDK_CLASSES_ACTOR
 #define CLIENT_SDK_CLASSES_ACTOR
 
+#include "Level.h"
+
 class Actor {
 private:
     char pad_0008[304];    //0x0008
@@ -22,6 +24,10 @@ private:
 	char pad_04FC[84];     //0x04FC
 public:
 	uint64_t runtimeId;    //0x0550
+public:
+    auto getLevel(void) -> Level* {
+        return *(Level**)((uintptr_t)(this) + 0x368);
+    };
 private:
     virtual auto Function0(void) -> void;
     virtual auto Function1(void) -> void;
