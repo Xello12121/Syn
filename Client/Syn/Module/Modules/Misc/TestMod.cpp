@@ -22,5 +22,7 @@ auto TestModule::onGameMode(GameMode* GM) -> void {
             GM->attack(entity);
             player->swing();
         };
+
+        entity->setSize(2.f, 6.f);
     };
 };
