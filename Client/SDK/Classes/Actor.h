@@ -304,6 +304,26 @@ public:
     virtual auto getAnimationComponent(void) -> uintptr_t*;
     virtual auto openContainerComponent(Actor*) -> void;
     virtual auto swing(void) -> void;
+    virtual auto useItem(__int64, int, bool) -> void;
+private:
+    virtual auto Function221(void) -> void;
+    virtual auto Function222(void) -> void;
+    virtual auto Function223(void) -> void;
+public:
+    virtual auto getMapDecorationRotation(void) -> float;
+    virtual auto getPassengerYRotation(Actor*) -> float;
+    virtual auto getYHeadRot(void) -> float;
+    virtual auto isWorldBuilder(void) -> bool;
+    virtual auto isInCreativeMode(void) -> bool;
+    virtual auto isAdventure(void) -> bool;
+    virtual auto add(uintptr_t*) -> bool;
+    virtual auto drop(uintptr_t*, bool) -> void;
+    virtual auto getInteraction(uintptr_t*, uintptr_t*, Vec3<float>*) -> bool;
+private:
+    virtual auto Function233(void) -> void;
+    virtual auto Function234(void) -> void;
+public:
+    virtual auto setSize(float, float) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
