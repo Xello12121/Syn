@@ -22,10 +22,10 @@ auto Actor_BlockSource_Callback(Actor* e, void* a2, void* a3) -> void {
     _Actor_BlockSource(e, a2, a3);
 };
 
-typedef void (__thiscall* GameMode_Tick)(uintptr_t*);
+typedef void (__thiscall* GameMode_Tick)(GameMode*);
 GameMode_Tick _GameMode_Tick;
 
-auto GameMode_Tick_Callback(uintptr_t* GM) -> void {
+auto GameMode_Tick_Callback(GameMode* GM) -> void {
     auto player = *(Actor**)((uintptr_t)(GM) + 0x8);
     auto level = (player != nullptr ? player->getLevel() : nullptr);
 
@@ -33,6 +33,13 @@ auto GameMode_Tick_Callback(uintptr_t* GM) -> void {
         for(auto [runtimeId, entity] : hookMgr->entityMap) {
             if(level->fetchEntity(runtimeId, false) == nullptr)
                 hookMgr->entityMap.erase(runtimeId);
+        };
+
+        for(auto category : hookMgr->categories) {
+            for(auto mod : category->modules) {
+                if(mod->isEnabled)
+                    mod->onGameMode(GM);
+            };
         };
     };
 

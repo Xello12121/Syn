@@ -20,6 +20,8 @@ public:
 private:
     virtual auto onEnable(void) -> void {};
     virtual auto onDisable(void) -> void {};
+public:
+    virtual auto onGameMode(GameMode*) -> void {};
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULE */
