@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <Windows.h>
+#include <algorithm>
 #include <assert.h>
 #include <fstream>
 #include <vector>

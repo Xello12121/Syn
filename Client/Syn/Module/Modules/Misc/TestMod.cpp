@@ -2,27 +2,42 @@
 #include "../../../Category/Category.h"
 #include "../../../Manager/Manager.h"
 
+auto getDistBetween(Vec3<float> posA, Vec3<float> posB) -> float {
+    auto dX = posA.x - posB.x;
+    auto dY = posA.y - posB.y;
+    auto dZ = posA.z - posB.z;
+
+    return sqrt(dX * dX + dY * dY + dZ * dZ);
+};
+
 auto TestModule::onGameMode(GameMode* GM) -> void {
     auto player = GM->player;
     auto myPos = *player->getPos();
 
-    for(auto [runtimeId, entity] : this->category->manager->entityMap) {
-        if(player->runtimeId == runtimeId)
+    auto distances = std::vector<float>();
+    auto entityMap = this->category->manager->entityMap;
+
+    for(auto [runtimeId, entity] : entityMap) {
+        if(player->runtimeId == runtimeId || !entity->isAlive())
             continue;
         
-        auto entPos = *entity->getPos();
+        distances.push_back(getDistBetween(myPos, *entity->getPos()));
+    };
 
-        auto dX = myPos.x - entPos.x;
-        auto dY = myPos.y - entPos.y;
-        auto dZ = myPos.z - entPos.z;
+    std::sort(distances.begin(), distances.end());
 
-        auto dist = sqrt(dX * dX + dY * dY + dZ * dZ);
-
-        if(dist <= 12.f) {
+    if(distances.empty())
+        return;
+    
+    for(auto [runtimeId, entity] : entityMap) {
+        if(player->runtimeId == runtimeId || !entity->isAlive())
+            continue;
+        
+        auto dist = getDistBetween(myPos, *entity->getPos());
+        
+        if(dist == distances[0] || (distances.size() > 2 ? dist == distances[1] : distances.back())){
             GM->attack(entity);
             player->swing();
         };
-
-        entity->setSize(2.f, 6.f);
     };
 };

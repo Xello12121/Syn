@@ -26,7 +26,7 @@ typedef void (__thiscall* GameMode_Tick)(GameMode*);
 GameMode_Tick _GameMode_Tick;
 
 auto GameMode_Tick_Callback(GameMode* GM) -> void {
-    auto player = *(Actor**)((uintptr_t)(GM) + 0x8);
+    auto player = GM->player;
     auto level = (player != nullptr ? player->getLevel() : nullptr);
 
     if(level != nullptr) {
