@@ -35,7 +35,7 @@ auto TestModule::onGameMode(GameMode* GM) -> void {
         
         auto dist = getDistBetween(myPos, *entity->getPos());
         
-        if(dist == distances[0] || (distances.size() > 2 ? dist == distances[1] : distances.back())){
+        if(dist == distances[0] || (distances.size() >= 2 ? dist == distances[1] : distances.back())){
             GM->attack(entity);
             player->swing();
         };
