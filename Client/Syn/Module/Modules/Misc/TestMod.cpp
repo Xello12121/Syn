@@ -21,6 +21,9 @@ auto TestModule::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive())
             continue;
         
+        if(entity->getEntityTypeId() == 64 || entity->getEntityTypeId() == 69)
+            continue;
+        
         distances.push_back(getDistBetween(myPos, *entity->getPos()));
     };
 
