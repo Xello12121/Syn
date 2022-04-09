@@ -10,7 +10,7 @@ public:
     Category* category = nullptr;
 public:
     std::string name;
-    bool isEnabled, wasEnabled;
+    bool isEnabled = false, wasEnabled = false;
 public:
     Module(Category*, std::string);
 public:
