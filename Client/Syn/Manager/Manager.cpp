@@ -46,14 +46,85 @@ auto GameMode_Tick_Callback(GameMode* GM) -> void {
     _GameMode_Tick(GM);
 };
 
+typedef long(__fastcall* PresentD3D12)(IDXGISwapChain*, UINT, UINT);
+PresentD3D12 oPresentD3D12;
+
+IDXGISwapChain* pSwapChain = nullptr;
+ID3D12Device* pDevice = nullptr;
+
+Renderer* renderer = nullptr;
+
+auto hookPresentD3D12(IDXGISwapChain3* pChain, UINT syncInterval, UINT flags) -> HRESULT {
+    
+    if(renderer == nullptr) {
+        renderer = new Renderer();
+
+        pSwapChain = pChain;
+
+        if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(pDevice), reinterpret_cast<void**>(&pDevice))))
+            pSwapChain->GetDevice(__uuidof(pDevice), reinterpret_cast<void**>(&pDevice));
+    };
+
+    renderer->init(pChain, pDevice);
+    renderer->beginFrame();
+
+    for(auto category : hookMgr->categories) {
+        for(auto mod : category->modules) {
+            if(mod->isEnabled)
+                mod->onRender(renderer);
+        };
+    };
+
+    renderer->endFrame();
+    renderer->releaseTextures();
+
+    return oPresentD3D12(pSwapChain, syncInterval, flags);
+};
+
+typedef void(__thiscall* KeyHook)(uint64_t, bool);
+KeyHook _KeyHook;
+
+auto KeyHook_Callback(uint64_t key, bool isDown) -> void {
+    hookMgr->keyMap[key] = isDown;
+
+    bool cancel = false;
+    for(auto category : hookMgr->categories) {
+        for(auto mod : category->modules) {
+            if(mod->isEnabled)
+                mod->onKey(key, isDown, &cancel);
+        };
+    };
+
+    if(!cancel)
+        _KeyHook(key, isDown);
+};
+
 auto Manager::initHooks(void) -> void {
     hookMgr = this;
     
-    if(MH_Initialize() != MH_OK)
-        return Utils::debugLog("Failed to initialize MinHook!");
+    if (kiero::init(kiero::RenderType::D3D12) != kiero::Status::Success)
+        return Utils::debugLog("Failed to create hook for SwapChain::Present (DX12)");
     
-    auto sig = Mem::findSig("48 89 5C 24 08 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 60");
+    kiero::bind(140, (void**)&oPresentD3D12, hookPresentD3D12);
+    
 
+    /* Key Hook */
+    
+    auto sig = Mem::findSig("48 89 5C 24 ? 57 48 83 EC 30 8B 05 ? ? ? ? 8B DA");
+
+    if(!sig)
+        return Utils::debugLog("Failed to find Sig for Key Hook");
+
+    if(MH_CreateHook((void*)sig, &KeyHook_Callback, reinterpret_cast<LPVOID*>(&_KeyHook)) != MH_OK)
+        return Utils::debugLog("Failed to create hook for Key Hook");
+    
+    MH_EnableHook((void*)sig);
+    
+    
+    /* Mob Tick Hook */
+
+    sig = Mem::findSig("48 89 5C 24 08 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 60");
+    
     if(!sig)
         return Utils::debugLog("Failed to find Sig for Actor_BlockSource");
     
@@ -61,6 +132,9 @@ auto Manager::initHooks(void) -> void {
         return Utils::debugLog("Failed to create hook for Actor_BlockSource");
     
     MH_EnableHook((void*)sig);
+
+    
+    /* GameMode Tick Hook */
 
     sig = Mem::findSig("48 8D 05 ? ? ? ? 48 8B D9 48 89 01 8B FA 48 8B 89 ? ? ? ? 48 85 C9 74 0A 48 8B 01 BA ? ? ? ? FF 10 48 8B 8B");
     int offset = *reinterpret_cast<int*>(sig + 3);
@@ -76,6 +150,7 @@ auto Manager::initHooks(void) -> void {
 };
 
 #include "../Module/Modules/Movement/AirJump.h"
+#include "../Module/Modules/Visuals/TabGui.h"
 #include "../Module/Modules/Misc/TestMod.h"
 
 auto Manager::init(void) -> void {
@@ -118,7 +193,7 @@ auto Manager::init(void) -> void {
     auto visuals = this->getCategory("Visuals");
 
     if(visuals != nullptr) {
-        /* Add Modules */
+        new TabGui(visuals);
     };
 
     /* World */

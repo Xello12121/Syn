@@ -22,6 +22,8 @@ private:
     virtual auto onDisable(void) -> void {};
 public:
     virtual auto onGameMode(GameMode*) -> void {};
+    virtual auto onRender(Renderer*) -> void {};
+    virtual auto onKey(uint64_t, bool, bool*) -> void {};
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULE */

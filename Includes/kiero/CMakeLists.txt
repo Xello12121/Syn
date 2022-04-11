@@ -1,0 +1,1 @@
+target_sources(Syn PRIVATE kiero.cpp)

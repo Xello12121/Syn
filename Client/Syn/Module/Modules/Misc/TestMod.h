@@ -6,7 +6,7 @@
 class TestModule : public Module {
 public:
     TestModule(Category* c) : Module(c, "TestModule") {
-        this->isEnabled = true;
+        this->isEnabled = false;
     };
 public:
     auto onGameMode(GameMode*) -> void override;
