@@ -142,7 +142,7 @@ auto Renderer::getTextHeight(std::wstring text, float size) -> float {
 
 auto Renderer::drawString(std::wstring text, float size, Vec2<float> pos, Color color) -> void {
     writeFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &textFormat);
-    d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color.r, color.g, color.b, 1.f), &brush);
+    d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color.r, color.g, color.b, color.a / 255.f), &brush);
     d2dRenderTarget->DrawText(text.c_str(), wcslen(text.c_str()), textFormat, D2D1::RectF(pos.x, pos.y, pos.x + 1000, pos.y + 1000), brush);
 
     if(textFormat != nullptr)
@@ -153,7 +153,7 @@ auto Renderer::drawString(std::wstring text, float size, Vec2<float> pos, Color 
 };
 
 auto Renderer::fillRectangle(Vec4<float> rectPos, Color color) -> void {
-    d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color.r, color.g, color.b, color.a), &brush);
+    d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color.r, color.g, color.b, color.a / 255.f), &brush);
     d2dRenderTarget->FillRectangle(D2D1::RectF(rectPos.x, rectPos.y, rectPos.z, rectPos.w), brush);
 
     if(brush != nullptr)
@@ -161,7 +161,7 @@ auto Renderer::fillRectangle(Vec4<float> rectPos, Color color) -> void {
 };
 
 auto Renderer::drawRectangle(Vec4<float> rectPos, Color color, float lineWidth) -> void {
-    d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color.r, color.g, color.b, color.a), &brush);
+    d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(color.r, color.g, color.b, color.a / 255.f), &brush);
     d2dRenderTarget->DrawRectangle(D2D1::RectF(rectPos.x, rectPos.y, rectPos.z, rectPos.w), brush, lineWidth);
 
     if(brush != nullptr)
