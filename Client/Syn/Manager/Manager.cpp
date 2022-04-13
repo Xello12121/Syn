@@ -149,8 +149,13 @@ auto Manager::initHooks(void) -> void {
     MH_EnableHook((void*)VTable[8]);
 };
 
+#include "../Module/Modules/Combat/Killaura.h"
+#include "../Module/Modules/Combat/Hitbox.h"
+
 #include "../Module/Modules/Movement/AirJump.h"
+
 #include "../Module/Modules/Visuals/TabGui.h"
+
 #include "../Module/Modules/Misc/TestMod.h"
 
 auto Manager::init(void) -> void {
@@ -169,7 +174,8 @@ auto Manager::init(void) -> void {
     auto combat = this->getCategory("Combat");
 
     if(combat != nullptr) {
-        /* Add Modules */
+        new Killaura(combat);
+        new Hitbox(combat);
     };
 
     /* Movement */
