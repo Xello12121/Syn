@@ -13,9 +13,10 @@ private:
 public:
 	bool onGround;         //0x01D8
 private:
-	char pad_01D9[767];    //0x01D9
+	char pad_01D9[759];    //0x01D9
 public:
-	Vec3<float> pos;       //0x04D8
+	Vec2<float> collision; //0x04D0
+    Vec3<float> pos;       //0x04D8
 private:
 	char pad_04E4[12];     //0x04E4
 public:
