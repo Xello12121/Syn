@@ -325,6 +325,52 @@ private:
     virtual auto Function234(void) -> void;
 public:
     virtual auto setSize(float, float) -> void;
+    virtual auto onOrphan(void) -> void;
+    virtual auto wobble(void) -> void;
+    virtual auto wasHurt(void) -> bool;
+    virtual auto startSpinAttack(void) -> void;
+    virtual auto stopSpinAttack(void) -> void;
+    virtual auto setDamageNearbyMobs(bool) -> void;
+private:
+    virtual auto Function242(void) -> void;
+public:
+    virtual auto reloadLootTable(uintptr_t*) -> void;
+    virtual auto reloadLootTable(void) -> void;
+private:
+    virtual auto Function245(void) -> void;
+public:
+    virtual auto kill(void) -> void;
+    virtual auto die(uintptr_t*) -> void;
+    virtual auto shouldDropDeathLoot(void) -> bool;
+    virtual auto shouldTick(void) -> bool;
+    virtual auto extractSnapshot(uintptr_t*) -> void;
+    virtual auto applySnapshot(uintptr_t*, uintptr_t*) -> void;
+    virtual auto getNextStep(float) -> float;
+    virtual auto getLootTable(void) -> uintptr_t*;
+    virtual auto interpolatorTick(void) -> void;
+    virtual auto updateEntitySpecificMolangVariables(uintptr_t*) -> void;
+    virtual auto shouldTryMakeStepSound(void) -> bool;
+private:
+    virtual auto Function257(void) -> void;
+    virtual auto Function258(void) -> void;
+public:
+    virtual auto markHurt(void) -> void;
+private:
+    virtual auto Function260(void) -> void;
+    virtual auto Function261(void) -> void;
+    virtual auto Function262(void) -> void;
+public:
+    virtual auto _playStepSound(Vec3<int>*, uintptr_t*) -> void;
+    virtual auto _playFlySound(Vec3<int>*, uintptr_t*) -> void;
+private:
+    virtual auto Function265(void) -> void;
+public:
+    virtual auto checkInsideBlocks(float) -> void;
+    virtual auto pushOutOfBlocks(Vec3<float>*) -> void;
+    virtual auto updateWaterState(void) -> bool;
+    virtual auto doWaterSplashEffect(void) -> void;
+    virtual auto spawnTrailBubbles(void) -> void;
+    virtual auto updateInsideBlock(void) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_ACTOR */
