@@ -7,6 +7,7 @@ class TabGui : public Module {
 public:
     TabGui(Category* c) : Module(c, "Tab GUI") {
         this->isEnabled = true;
+        this->key = VK_TAB;
     };
 public:
     auto onRender(Renderer*) -> void override;
