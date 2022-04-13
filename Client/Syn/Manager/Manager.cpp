@@ -154,6 +154,8 @@ auto Manager::initHooks(void) -> void {
 
 #include "../Module/Modules/Movement/AirJump.h"
 
+#include "../Module/Modules/Player/AutoSprint.h"
+
 #include "../Module/Modules/Visuals/TabGui.h"
 
 #include "../Module/Modules/Misc/TestMod.h"
@@ -191,7 +193,7 @@ auto Manager::init(void) -> void {
     auto player = this->getCategory("Player");
 
     if(player != nullptr) {
-        /* Add Modules */
+        new AutoSprint(player);
     };
 
     /* Visuals */
