@@ -9,7 +9,7 @@ public:
         //
     };
 public:
-    auto onGameMode(GameMode*) -> void override;
+    auto onKey(uint64_t, bool, bool*) -> void override;
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULES_MOVEMENT_AIRJUMP */
