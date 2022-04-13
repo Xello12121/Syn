@@ -6,7 +6,9 @@
 
 class Player : public Actor {
 public:
-    //
+    auto setFlightSpeed(float f) -> void {
+        *(float*)((uintptr_t)(this) + 0x7C0) = f;
+    };
 };
 
 #endif /* CLIENT_SDK_CLASSES_PLAYER */
