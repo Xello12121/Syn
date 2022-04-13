@@ -1,8 +1,10 @@
 #include "AirJump.h"
 
-auto AirJump::onGameMode(GameMode* GM) -> void {
-    auto player = GM->player;
+auto AirJump::onKey(uint64_t key, bool isDown, bool* cancel) -> void {
+    auto player = MC::getLocalPlayer();
     
-    if(player != nullptr)
-        player->onGround = true;
+    if(!isDown || key != VK_SPACE || player == nullptr)
+        return;
+    
+    //
 };
