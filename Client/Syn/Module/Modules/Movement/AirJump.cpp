@@ -1,10 +1,8 @@
 #include "AirJump.h"
 
-auto AirJump::onTick(void) -> void {
-    auto localPlayer = MC::getLocalPlayer();
+auto AirJump::onGameMode(GameMode* GM) -> void {
+    auto player = GM->player;
     
-    if(localPlayer == nullptr)
-        return;
-    
-    localPlayer->onGround = true;
+    if(player != nullptr)
+        player->onGround = true;
 };
