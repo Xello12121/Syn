@@ -4,7 +4,9 @@
 
 auto TabGui::onRender(Renderer* r) -> void {
     auto manager = this->category->manager;
+    
     auto categories = manager->categories;
+    auto modules = categories.at(selCatIndex)->modules;
 
     auto yOff = 0.f;
     auto rectWidth = 0;
@@ -45,6 +47,47 @@ auto TabGui::onRender(Renderer* r) -> void {
 
         I++;
     };
+
+    if(modules.empty() || !selectedCat)
+        return;
+
+    rectWidth = 0.f;
+    yOff = 0.f;
+    for(auto mod : modules) {
+        auto name = std::wstring(mod->name.begin(), mod->name.end());
+        auto height = r->getTextHeight(name, textSize);
+
+        yOff += height;
+
+        auto currWidth = r->getTextWidth(name, textSize);
+
+        if(currWidth > rectWidth)
+            rectWidth = currWidth;
+    };
+
+    rectPos = Vec4<float>(rectPos.z, rectPos.y, rectPos.z + (16.f + rectWidth), rectPos.y + (yOff + 9.f));
+    
+    r->fillRectangle(rectPos, Color(21, 21, 21, .4));
+    r->drawRectangle(rectPos, Color(255, 255, 255, .6), 2);
+
+    I = 0;
+    for(auto mod : modules) {
+        auto name = std::wstring(mod->name.begin(), mod->name.end());
+        auto height = r->getTextHeight(name, textSize);
+
+        if(selectedMod && selModIndex == I) {
+            if(selModAnimModifier == 0.f)
+                selModAnimModifier = rectPos.x + 6.f;
+            
+            if(selModAnimModifier < (rectPos.z - 6.f))
+                selModAnimModifier += animSpeedModifier;
+
+            r->fillRectangle(Vec4<float>(rectPos.x + 6.f, (I * height) + 10.f, selModAnimModifier, ((I * height) + 10.f) + height), Color(3, 194, 252));
+        };
+
+        r->drawString(name, textSize, Vec2<float>(rectPos.x + 8.f, rectPos.y + (I * height) + 4.f), mod->isEnabled ? Color(25, 225, 150) : Color(255, 255, 255));
+        I++;
+    };
 };
 
 auto TabGui::onKey(uint64_t key, bool isDown, bool* cancel) -> void {
@@ -59,7 +102,17 @@ auto TabGui::onKey(uint64_t key, bool isDown, bool* cancel) -> void {
             if(!selectedCat) {
                 selectedCat = true;
             } else {
-                selectedMod = true;
+                if(!selectedMod) {
+                    selectedMod = true;
+                } else {
+                    auto mod = modules.at(selModIndex);
+
+                    if(mod == nullptr)
+                        return;
+                    
+                    mod->isEnabled = !mod->isEnabled;
+                    selModAnimModifier = 0.f;
+                };
             };
         break;
         case VK_LEFT:
