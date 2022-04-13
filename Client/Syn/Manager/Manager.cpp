@@ -88,8 +88,17 @@ auto KeyHook_Callback(uint64_t key, bool isDown) -> void {
     hookMgr->keyMap[key] = isDown;
 
     bool cancel = false;
+    
     for(auto category : hookMgr->categories) {
         for(auto mod : category->modules) {
+            if(isDown && mod->key == key) {
+                auto instance = MC::getClientInstance();
+                auto mcGame = instance->getMinecraftGame();
+
+                if(mcGame != nullptr && mcGame->canUseKeys)
+                    mod->isEnabled = !mod->isEnabled;
+            };
+            
             if(mod->isEnabled)
                 mod->onKey(key, isDown, &cancel);
         };
