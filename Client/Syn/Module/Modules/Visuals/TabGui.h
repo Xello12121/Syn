@@ -19,6 +19,9 @@ private:
     float selModAnimModifier = 0.f;
 private:
     float animSpeedModifier = 4.f;
+private:
+    float alpha = 0.f;
+    auto updateAlpha(void) -> void;
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULES_VISUALS_TABGUI */
