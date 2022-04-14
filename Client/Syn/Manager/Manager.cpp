@@ -166,6 +166,7 @@ auto Manager::initHooks(void) -> void {
 #include "../Module/Modules/Player/AutoSprint.h"
 
 #include "../Module/Modules/Visuals/TabGui.h"
+#include "../Module/Modules/Visuals/ModuleList.h"
 
 #include "../Module/Modules/Misc/TestMod.h"
 
@@ -211,6 +212,7 @@ auto Manager::init(void) -> void {
 
     if(visuals != nullptr) {
         new TabGui(visuals);
+        new ModuleList(visuals);
     };
 
     /* World */
