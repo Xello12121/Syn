@@ -141,9 +141,11 @@ auto TabGui::onKey(uint64_t key, bool isDown, bool* cancel) -> void {
         break;
         case VK_LEFT:
             if(selectedMod) {
+                selModIndex = 0;
                 selectedMod = false;
                 selModAnimModifier = 0.f;
             } else {
+                selCatIndex = 0;
                 selectedCat = false;
                 selCatAnimModifier = 0.f;
             };
