@@ -91,9 +91,6 @@ auto Renderer::getTextWidth(std::wstring text, float size) -> float {
     std::for_each(text.begin(), text.end(), [&](char const &c) {
         auto wstr = this->charToWStr(c);
 
-        if(wstr == L" ")
-            len += (size / 2.5);
-
         IDWriteTextLayout* layout = nullptr;
         writeFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &textFormat);
         writeFactory->CreateTextLayout(wstr.c_str(), wcslen(wstr.c_str()), textFormat, 0.0f, 0.0f, &layout);
@@ -101,7 +98,7 @@ auto Renderer::getTextWidth(std::wstring text, float size) -> float {
         DWRITE_TEXT_METRICS metrics;
         layout->GetMetrics(&metrics);
 
-        len += metrics.width;
+        len += metrics.widthIncludingTrailingWhitespace;
 
         if(textFormat != nullptr)
             textFormat->Release();
@@ -127,6 +124,7 @@ auto Renderer::getTextHeight(std::wstring text, float size) -> float {
         layout->GetMetrics(&metrics);
 
         auto curr = metrics.height;
+        
         if(curr > height)
             height = curr;
 
