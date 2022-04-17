@@ -2,8 +2,11 @@
 
 #include "../Category/Category.h"
 #include "../Module/Module.h"
+#include "../../Client.h"
 
 Manager::Manager(Client* client) {
+    Utils::debugLog("Starting up Manager Instance for Client: " + client->name);
+
     this->client = client;
     this->initHooks();
     this->init();
@@ -61,11 +64,15 @@ auto hookPresentD3D12(IDXGISwapChain3* pChain, UINT syncInterval, UINT flags) ->
 
         pSwapChain = pChain;
 
-        if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(pDevice), reinterpret_cast<void**>(&pDevice))))
-            pSwapChain->GetDevice(__uuidof(pDevice), reinterpret_cast<void**>(&pDevice));
+        if (FAILED(pSwapChain->GetDevice(__uuidof(pDevice), reinterpret_cast<void**>(&pDevice)))) {
+            Utils::debugLog("Failed to get SwapChain Device!");
+            return oPresentD3D12(pSwapChain, syncInterval, flags);
+        };
     };
 
-    renderer->init(pChain, pDevice);
+    if(!renderer->init(pChain, pDevice))
+        return oPresentD3D12(pSwapChain, syncInterval, flags);
+    
     renderer->beginFrame();
 
     for(auto category : hookMgr->categories) {
@@ -114,6 +121,8 @@ auto Manager::initHooks(void) -> void {
     if (kiero::init(kiero::RenderType::D3D12) != kiero::Status::Success)
         return Utils::debugLog("Failed to create hook for SwapChain::Present (DX12)");
     
+    
+    Utils::debugLog("Kiero: Binding Present (DX12)");
     kiero::bind(140, (void**)&oPresentD3D12, hookPresentD3D12);
     
 
@@ -127,6 +136,7 @@ auto Manager::initHooks(void) -> void {
     if(MH_CreateHook((void*)sig, &KeyHook_Callback, reinterpret_cast<LPVOID*>(&_KeyHook)) != MH_OK)
         return Utils::debugLog("Failed to create hook for Key Hook");
     
+    Utils::debugLog("Manager: Enabling Key Hook");
     MH_EnableHook((void*)sig);
     
     
@@ -140,6 +150,7 @@ auto Manager::initHooks(void) -> void {
     if(MH_CreateHook((void*)sig, &Actor_BlockSource_Callback, reinterpret_cast<LPVOID*>(&_Actor_BlockSource)) != MH_OK)
         return Utils::debugLog("Failed to create hook for Actor_BlockSource");
     
+    Utils::debugLog("Manager: Enabling Actor BlockSource Tick Hook");
     MH_EnableHook((void*)sig);
 
     
@@ -155,6 +166,7 @@ auto Manager::initHooks(void) -> void {
     if(MH_CreateHook((void*)VTable[8], &GameMode_Tick_Callback, reinterpret_cast<LPVOID*>(&_GameMode_Tick)) != MH_OK)
         return Utils::debugLog("Failed to create hook for GameMode_Tick");
     
+    Utils::debugLog("Manager: Enabling GameMode Tick Hook");
     MH_EnableHook((void*)VTable[8]);
 };
 
@@ -179,7 +191,7 @@ auto Manager::init(void) -> void {
     };
 
     if(this->categories.empty())
-        return;
+        return Utils::debugLog("Manager: No Categories were registered!");
     
     /* Combat */
     

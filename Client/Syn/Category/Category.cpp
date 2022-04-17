@@ -4,6 +4,8 @@
 #include "../Module/Module.h"
 
 Category::Category(Manager* manager, std::string name) {
+    Utils::debugLog("Category: Initiating with name [ " + name + " ]");
+
     this->manager = manager;
     this->name = name;
 

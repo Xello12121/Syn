@@ -43,19 +43,36 @@ auto Utils::debugLog(std::string output) -> void {
 };
 
 
-auto Renderer::init(IDXGISwapChain* pChain, ID3D12Device* pDevice) -> void {
+auto Renderer::init(IDXGISwapChain* pChain, ID3D12Device* pDevice) -> bool {
 
     D2D1_FACTORY_OPTIONS options;
     options.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
-    D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, options, &factory);
+    
+    if(FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, options, &factory))) {
+        Utils::debugLog("Renderer > init: Failed to create D2D1 Factory!");
+        return false;
+    };
 
-    pChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackbuffer));
+    if(FAILED(pChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackbuffer)))) {
+        Utils::debugLog("Renderer > init: Failed to get dxgi buffer from chain!");
+        return false;
+    };
 
     D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties( D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED));
-    factory->CreateDxgiSurfaceRenderTarget(dxgiBackbuffer, props, &d2dRenderTarget);
+    
+    if(FAILED(factory->CreateDxgiSurfaceRenderTarget(dxgiBackbuffer, props, &d2dRenderTarget))) {
+        Utils::debugLog("Renderer > init: Failed to get render target surface!");
+        return false;
+    };
+
     dxgiBackbuffer->Release();
 
-    DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(writeFactory), (IUnknown**)(&writeFactory));
+    if(FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(writeFactory), (IUnknown**)(&writeFactory)))) {
+        Utils::debugLog("Renderer > init: Failed to create write factory for CustomWrite");
+        return false;
+    };
+
+    return true;
 };
 
 auto Renderer::releaseTextures() -> void {

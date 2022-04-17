@@ -103,7 +103,7 @@ private:
 private:
     bool initialized = false;
 public:
-    auto init(IDXGISwapChain*, ID3D12Device*) -> void;
+    auto init(IDXGISwapChain*, ID3D12Device*) -> bool;
     auto releaseTextures() -> void;
     auto beginFrame() -> void;
     auto endFrame() -> void;

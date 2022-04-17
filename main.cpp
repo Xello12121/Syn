@@ -1,6 +1,7 @@
 #include "Client/Client.h"
 
 auto init(HINSTANCE hInstance) -> void {
+    Utils::debugLog("DLL Injected : Starting Client Instance");
     new Client("Syn");
 };
 
