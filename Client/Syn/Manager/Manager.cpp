@@ -80,6 +80,8 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
 
         DXGI_SWAP_CHAIN_DESC sd;
         ppSwapChain->GetDesc(&sd);
+        LPCSTR windowName = "Minecraft";
+        sd.OutputWindow = FindWindowA(nullptr, windowName);
         auto window = sd.OutputWindow;
         
         ID3D11Texture2D* pBackBuffer;
