@@ -152,7 +152,7 @@ auto KeyHook_Callback(uint64_t key, bool isDown) -> void {
 typedef void(__fastcall* MouseHook)(uint64_t, char, bool, uint64_t, uint64_t, int, int, BYTE);
 MouseHook _MouseHook;
 
-auto MouseHook_Callback(uint64_t a1, char action, bool isDown, uint64_t a4, uint64_t a5, float x, float y, BYTE a8) -> void {
+auto MouseHook_Callback(uint64_t a1, char action, bool isDown, uint64_t a4, uint64_t a5, int x, int y, BYTE a8) -> void {
     
     ImGui::GetIO().MousePos.x = 0;
 	ImGui::GetIO().MousePos.y = 0;
@@ -160,8 +160,7 @@ auto MouseHook_Callback(uint64_t a1, char action, bool isDown, uint64_t a4, uint
     if(action)
         ImGui::GetIO().MouseDown[0] = isDown;
     
-    if(!ImGui::IsAnyItemHovered())
-        _MouseHook(a1, action, isDown, a4, a5, x, y, a8);
+    _MouseHook(a1, action, isDown, a4, a5, x, y, a8);
 };
 
 auto Manager::initHooks(void) -> void {
