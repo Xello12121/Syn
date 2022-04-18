@@ -11,13 +11,9 @@ private:
 public:
     Vec2<float> scaledRes; //0x0028
 private:
-    char pad_0030[8];      //0x0030
-private:
-    float scale;           //0x0038
-private:
-    char pad_003C[22];     //0x003C
+    char pad_0030[4];      //0x0030
 public:
-    Vec2<short> mousePos;  //0x0052
+    float scale;           //0x0038
 };
 
 #endif /* CLIENT_SDK_CLASSES_GUIDATA */

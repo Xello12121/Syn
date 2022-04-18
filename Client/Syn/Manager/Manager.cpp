@@ -98,6 +98,8 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::GetIO().MousePos.y -= 5.f;
+
         for(auto category : hookMgr->categories) {
             for(auto mod : category->modules) {
                 if(mod->isEnabled)
@@ -154,9 +156,6 @@ MouseHook _MouseHook;
 
 auto MouseHook_Callback(uint64_t a1, char action, bool isDown, uint64_t a4, uint64_t a5, int x, int y, BYTE a8) -> void {
     
-    ImGui::GetIO().MousePos.x = 0;
-	ImGui::GetIO().MousePos.y = 0;
-
     if(action)
         ImGui::GetIO().MouseDown[0] = isDown;
     

@@ -17,6 +17,8 @@ public:
     std::map<uint64_t, Actor*> entityMap;
     std::map<uint64_t, bool> keyMap;
 public:
+    Vec2<int> mousePos;
+public:
     Manager(Client*);
 public:
     auto initHooks(void) -> void;
