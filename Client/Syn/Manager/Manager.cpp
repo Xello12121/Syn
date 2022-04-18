@@ -77,12 +77,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
     if(deviceType == ID3D_Device_Type::D3D11) {
         ID3D11DeviceContext* ppContext = nullptr;
         d3d11Device->GetImmediateContext(&ppContext);
-
-        DXGI_SWAP_CHAIN_DESC sd;
-        ppSwapChain->GetDesc(&sd);
-        LPCSTR windowName = "Minecraft";
-        sd.OutputWindow = FindWindowA(nullptr, windowName);
-        auto window = sd.OutputWindow;
         
         ID3D11Texture2D* pBackBuffer;
         ppSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)& pBackBuffer);
@@ -91,6 +85,8 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d11Device->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
         
         pBackBuffer->Release();
+
+        auto window = (HWND)FindWindowA(nullptr, (LPCSTR)"Minecraft");
 
         ImGui::CreateContext();
 	    ImGuiIO& io = ImGui::GetIO();
