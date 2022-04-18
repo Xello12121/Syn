@@ -88,44 +88,4 @@ public:
     };
 };
 
-class Color {
-public:
-    float r, g, b, a;
-public:
-    Color(float r = 0, float g = 0, float b = 0, float a = 1) {
-        this->r = (r / 255.f);
-        this->g = (g / 255.f);
-        this->b = (b / 255.f);
-        this->a = (a * 255.f);
-    };
-};
-
-class Renderer {
-private:
-    ID2D1RenderTarget* d2dRenderTarget = nullptr;
-
-    ID2D1Factory* factory = nullptr;
-    IDXGISurface* dxgiBackbuffer = nullptr;
-    IDWriteFactory1* writeFactory = nullptr;
-
-    IDWriteTextFormat* textFormat = nullptr;
-    ID2D1SolidColorBrush* brush = nullptr;
-private:
-    bool initialized = false;
-public:
-    auto init(IDXGISwapChain*, ID3D12Device*) -> bool;
-    auto releaseTextures() -> void;
-    auto beginFrame() -> void;
-    auto endFrame() -> void;
-private:
-    auto charToWStr(char const &c) -> std::wstring;
-public:
-    auto getTextWidth(std::wstring, float) -> float;
-    auto getTextHeight(std::wstring, float) -> float;
-public:
-    auto drawString(std::wstring, float, Vec2<float>, Color) -> void;
-    auto fillRectangle(Vec4<float>, Color color) -> void;
-    auto drawRectangle(Vec4<float>, Color color, float) -> void;
-};
-
 #endif /* CLIENT_UTILS_UTILS */

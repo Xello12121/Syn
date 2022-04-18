@@ -23,7 +23,7 @@ private:
     virtual auto onDisable(void) -> void {};
 public:
     virtual auto onGameMode(GameMode*) -> void {};
-    virtual auto onRender(Renderer*) -> void {};
+    virtual auto onRender(void) -> void {};
     virtual auto onKey(uint64_t, bool, bool*) -> void {};
 };
 

@@ -98,8 +98,12 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("ImGui Window");
-        ImGui::End();
+        for(auto category : hookMgr->categories) {
+            for(auto mod : category->modules) {
+                if(mod->isEnabled)
+                    mod->onRender();
+            };
+        };
     
         ImGui::Render();
 
@@ -145,6 +149,21 @@ auto KeyHook_Callback(uint64_t key, bool isDown) -> void {
         _KeyHook(key, isDown);
 };
 
+typedef void(__fastcall* MouseHook)(uint64_t, char, bool, uint64_t, uint64_t, int, int, BYTE);
+MouseHook _MouseHook;
+
+auto MouseHook_Callback(uint64_t a1, char action, bool isDown, uint64_t a4, uint64_t a5, float x, float y, BYTE a8) -> void {
+    
+    ImGui::GetIO().MousePos.x = 0;
+	ImGui::GetIO().MousePos.y = 0;
+
+    if(action)
+        ImGui::GetIO().MouseDown[0] = isDown;
+    
+    if(!ImGui::IsAnyItemHovered())
+        _MouseHook(a1, action, isDown, a4, a5, x, y, a8);
+};
+
 auto Manager::initHooks(void) -> void {
     hookMgr = this;
     
@@ -167,6 +186,18 @@ auto Manager::initHooks(void) -> void {
         return Utils::debugLog("Failed to create hook for Key Hook");
     
     Utils::debugLog("Manager: Enabling Key Hook");
+    MH_EnableHook((void*)sig);
+
+    
+    sig = Mem::findSig("48 8B C4 48 89 58 08 48 89 68 10 48 89 70 18 57 41 54 41 55 41 56 41 57 48 83 EC 60 44");
+
+    if(!sig)
+        return Utils::debugLog("Failed to find Sig for Mouse Hook");
+    
+    if(MH_CreateHook((void*)sig, &MouseHook_Callback, reinterpret_cast<LPVOID*>(&_MouseHook)) != MH_OK)
+        return Utils::debugLog("Failed to create hook for Mouse Hook");
+    
+    Utils::debugLog("Manager: Enabling Mouse Hook");
     MH_EnableHook((void*)sig);
     
     
@@ -208,7 +239,7 @@ auto Manager::initHooks(void) -> void {
 #include "../Module/Modules/Player/AutoSprint.h"
 
 #include "../Module/Modules/Visuals/TabGui.h"
-#include "../Module/Modules/Visuals/ModuleList.h"
+#include "../Module/Modules/Visuals/ClickGui.h"
 
 #include "../Module/Modules/Misc/TestMod.h"
 
@@ -254,7 +285,7 @@ auto Manager::init(void) -> void {
 
     if(visuals != nullptr) {
         new TabGui(visuals);
-        new ModuleList(visuals);
+        new ClickGui(visuals);
     };
 
     /* World */
