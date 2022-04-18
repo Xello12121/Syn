@@ -49,43 +49,73 @@ auto GameMode_Tick_Callback(GameMode* GM) -> void {
     _GameMode_Tick(GM);
 };
 
-typedef long(__fastcall* PresentD3D12)(IDXGISwapChain*, UINT, UINT);
+typedef HRESULT(__thiscall* PresentD3D12)(IDXGISwapChain3*, UINT, UINT);
 PresentD3D12 oPresentD3D12;
 
-IDXGISwapChain* pSwapChain = nullptr;
-ID3D12Device* pDevice = nullptr;
+ID3D11Device* d3d11Device = nullptr;
+ID3D12Device* d3d12Device = nullptr;
 
-Renderer* renderer = nullptr;
+enum ID3D_Device_Type { INVALID_DEVICE_TYPE, D3D11, D3D12 };
 
-auto hookPresentD3D12(IDXGISwapChain3* pChain, UINT syncInterval, UINT flags) -> HRESULT {
-    
-    if(renderer == nullptr) {
-        renderer = new Renderer();
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-        pSwapChain = pChain;
+auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flags) -> HRESULT {
 
-        if (FAILED(pSwapChain->GetDevice(__uuidof(pDevice), reinterpret_cast<void**>(&pDevice)))) {
-            Utils::debugLog("Failed to get SwapChain Device!");
-            return oPresentD3D12(pSwapChain, syncInterval, flags);
-        };
+    auto deviceType = ID3D_Device_Type::INVALID_DEVICE_TYPE;
+
+    if(SUCCEEDED(ppSwapChain->GetDevice(IID_PPV_ARGS(&d3d11Device)))) {
+        deviceType = ID3D_Device_Type::D3D11;
+    } else if(SUCCEEDED(ppSwapChain->GetDevice(IID_PPV_ARGS(&d3d12Device)))) {
+        deviceType = ID3D_Device_Type::D3D12;
     };
 
-    if(!renderer->init(pChain, pDevice))
-        return oPresentD3D12(pSwapChain, syncInterval, flags);
+    if(deviceType == ID3D_Device_Type::INVALID_DEVICE_TYPE) {
+        Utils::debugLog("Failed to get device!");
+        goto out;
+    };
     
-    renderer->beginFrame();
+    if(deviceType == ID3D_Device_Type::D3D11) {
+        ID3D11DeviceContext* ppContext = nullptr;
+        d3d11Device->GetImmediateContext(&ppContext);
 
-    for(auto category : hookMgr->categories) {
-        for(auto mod : category->modules) {
-            if(mod->isEnabled)
-                mod->onRender(renderer);
-        };
+        DXGI_SWAP_CHAIN_DESC sd;
+        ppSwapChain->GetDesc(&sd);
+        auto window = sd.OutputWindow;
+        
+        ID3D11Texture2D* pBackBuffer;
+        ppSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)& pBackBuffer);
+        
+        ID3D11RenderTargetView* mainRenderTargetView;
+        d3d11Device->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
+        
+        pBackBuffer->Release();
+
+        ImGui::CreateContext();
+	    ImGuiIO& io = ImGui::GetIO();
+
+        ImGui_ImplWin32_Init(window);
+	    ImGui_ImplDX11_Init(d3d11Device, ppContext);
+
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("ImGui Window");
+        ImGui::End();
+    
+        ImGui::Render();
+
+        ppContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        
+    } else if(deviceType == ID3D_Device_Type::D3D12) {
+        /* WIP */
     };
 
-    renderer->endFrame();
-    renderer->releaseTextures();
+out:
+    return oPresentD3D12(ppSwapChain, syncInterval, flags);
 
-    return oPresentD3D12(pSwapChain, syncInterval, flags);
+    return oPresentD3D12(ppSwapChain, syncInterval, flags);
 };
 
 typedef void(__thiscall* KeyHook)(uint64_t, bool);

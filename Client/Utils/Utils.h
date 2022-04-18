@@ -1,5 +1,5 @@
-#ifndef UTILS_UTILS
-#define UTILS_UTILS
+#ifndef CLIENT_UTILS_UTILS
+#define CLIENT_UTILS_UTILS
 
 #include <filesystem>
 #include <Windows.h>
@@ -10,7 +10,17 @@
 #include <string>
 #include <map>
 
+#include "../../../Includes/imgui/imgui.h"
+
+#include "../../../Includes/imgui/imgui_impl_win32.h"
+
+#include "../../../Includes/imgui/imgui_impl_dx12.h"
+#include "../../../Includes/imgui/imgui_impl_dx11.h"
+
+#include <initguid.h>
+
 #include <dxgi.h>
+#include <d3d11.h>
 #include <d3d12.h>
 #include <d2d1_1.h>
 #include <dxgi1_4.h>
@@ -118,4 +128,4 @@ public:
     auto drawRectangle(Vec4<float>, Color color, float) -> void;
 };
 
-#endif /* UTILS_UTILS */
+#endif /* CLIENT_UTILS_UTILS */
