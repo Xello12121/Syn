@@ -105,6 +105,8 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
 
         ppContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+        mainRenderTargetView->Release();
         
     } else if(deviceType == ID3D_Device_Type::D3D12) {
         /* WIP */
