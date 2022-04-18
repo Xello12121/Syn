@@ -11,10 +11,19 @@ auto ClickGui::onRender(void) -> void {
     };
 
     for(auto category : this->category->manager->categories) {
+        
+        ImGui::Spacing();
+
         if(ImGui::CollapsingHeader(category->name.c_str())) {
+            
             for(auto mod : category->modules) {
+                
+                ImGui::Spacing();
+
                 if(ImGui::CollapsingHeader(mod->name.c_str())) {
+                    
                     ImGui::Button(mod->name.c_str());
+                
                 };
             };
         };
