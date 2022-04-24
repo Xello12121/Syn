@@ -65,9 +65,18 @@ struct FrameContext {
 
 ID3D12CommandQueue* d3d12CommandQueue = nullptr;
 
+uint64_t buffersCounts = -1;
+FrameContext* frameContext;
+
 auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flags) -> HRESULT {
 
     auto deviceType = ID3D_Device_Type::INVALID_DEVICE_TYPE;
+    auto window = (HWND)FindWindowA(nullptr, (LPCSTR)"Minecraft");
+
+    if(window == NULL) {
+        Utils::debugLog("Failed to get Window HWND by name!");
+        goto out;
+    };
 
     if(SUCCEEDED(ppSwapChain->GetDevice(IID_PPV_ARGS(&d3d11Device)))) {
         deviceType = ID3D_Device_Type::D3D11;
@@ -85,14 +94,12 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d11Device->GetImmediateContext(&ppContext);
         
         ID3D11Texture2D* pBackBuffer;
-        ppSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)& pBackBuffer);
+        ppSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
         
         ID3D11RenderTargetView* mainRenderTargetView;
         d3d11Device->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
         
         pBackBuffer->Release();
-
-        auto window = (HWND)FindWindowA(nullptr, (LPCSTR)"Minecraft");
 
         ImGui::CreateContext();
 
@@ -109,22 +116,24 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
                     mod->onRender();
             };
         };
-    
+        
         ImGui::Render();
 
         ppContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
         mainRenderTargetView->Release();
+        d3d11Device->Release();
         
     } else if(deviceType == ID3D_Device_Type::D3D12) {
+
+        ID3D12DescriptorHeap* d3d12DescriptorHeapBackBuffers = nullptr;
+        ID3D12DescriptorHeap* d3d12DescriptorHeapImGuiRender = nullptr;
+        ID3D12GraphicsCommandList* d3d12CommandList = nullptr;
+        ID3D12CommandQueue* d3d12CommandQueue = nullptr;
+
         ImGui::CreateContext();
 
-        uint64_t buffersCounts = -1;
-        FrameContext* frameContext;
-
-        auto window = (HWND)FindWindowA(nullptr, (LPCSTR)"Minecraft");
-        
         DXGI_SWAP_CHAIN_DESC sdesc;
         ppSwapChain->GetDesc(&sdesc);
         sdesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -139,22 +148,18 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         descriptorImGuiRender.NumDescriptors = buffersCounts;
         descriptorImGuiRender.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-        ID3D12DescriptorHeap* d3d12DescriptorHeapImGuiRender = nullptr;
-        ID3D12DescriptorHeap* d3d12DescriptorHeapBackBuffers = nullptr;
-        ID3D12GraphicsCommandList* d3d12CommandList = nullptr;
-        ID3D12CommandAllocator* allocator = nullptr;
+        if (FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender))))
+            goto out;
+        
+        ID3D12CommandAllocator* allocator;
+        if (FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator))))
+            goto out;
 
-        if(FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender))))
-            goto out;
-        
-        if(FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator))))
-            goto out;
-        
         for (size_t i = 0; i < buffersCounts; i++) {
             frameContext[i].commandAllocator = allocator;
-        };
+        }
 
-        if(FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList))))
+        if (FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList))))
             goto out;
         
         D3D12_DESCRIPTOR_HEAP_DESC descriptorBackBuffers;
@@ -163,11 +168,11 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         descriptorBackBuffers.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         descriptorBackBuffers.NodeMask = 1;
 
-        if(FAILED(d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers))))
-            goto out;
-        
+        if (d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers)) != S_OK)
+            return false;
+
         const auto rtvDescriptorSize = d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = d3d12DescriptorHeapBackBuffers->GetCPUDescriptorHandleForHeapStart();
+        D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = d3d12DescriptorHeapBackBuffers->GetCPUDescriptorHandleForHeapStart();
 
         for (size_t i = 0; i < buffersCounts; i++) {
             ID3D12Resource* pBackBuffer = nullptr;
@@ -187,13 +192,13 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
 
         ImGui_ImplDX12_CreateDeviceObjects();
 
-        if(d3d12CommandQueue == nullptr)
+        if (d3d12CommandQueue == nullptr)
             goto out;
         
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        
+
         for(auto category : hookMgr->categories) {
             for(auto mod : category->modules) {
                 if(mod->isEnabled)
@@ -202,7 +207,7 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         };
 
         FrameContext& currentFrameContext = frameContext[ppSwapChain->GetCurrentBackBufferIndex()];
-        currentFrameContext.commandAllocator->Reset();
+		currentFrameContext.commandAllocator->Reset();
 
         D3D12_RESOURCE_BARRIER barrier;
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -216,8 +221,9 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d12CommandList->ResourceBarrier(1, &barrier);
         d3d12CommandList->OMSetRenderTargets(1, &currentFrameContext.main_render_target_descriptor, FALSE, nullptr);
         d3d12CommandList->SetDescriptorHeaps(1, &d3d12DescriptorHeapImGuiRender);
-    
+        
         ImGui::Render();
+
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12CommandList);
 
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -227,6 +233,15 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d12CommandList->Close();
 
         d3d12CommandQueue->ExecuteCommandLists(1, reinterpret_cast<ID3D12CommandList* const*>(&d3d12CommandList));
+
+        currentFrameContext.commandAllocator->Release();
+        currentFrameContext.main_render_target_resource->Release();
+
+        d3d12DescriptorHeapImGuiRender->Release();
+        d3d12DescriptorHeapBackBuffers->Release();
+        d3d12CommandList->Release();
+
+        d3d12Device->Release();
     };
 
     goto out;
