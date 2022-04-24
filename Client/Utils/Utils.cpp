@@ -62,12 +62,12 @@ auto RenderUtils::getTextSize(std::string text, float fontSize) -> ImVec2 {
 auto RenderUtils::drawText(std::string text, float fontSize, ImVec2 pos, ImColor col) -> void {
     if(RenderUtils::draw == nullptr)
         return;
-    draw->AddText(ImGui::GetFont(), fontSize * 10.f, pos, col, text.c_str());
+    draw->AddText(ImGui::GetFont(), fontSize * 10.f, pos, ImColor(col.Value.x / 255.f, col.Value.y / 255.f, col.Value.z / 255.f, col.Value.w), text.c_str());
 };
 
 auto RenderUtils::fillRect(ImVec4 pos, ImColor col, float round) -> void {
     if(RenderUtils::draw == nullptr)
         return;
     
-    draw->AddRectFilled(ImVec2(pos.x, pos.y), ImVec2(pos.z, pos.w), col, round);
+    draw->AddRectFilled(ImVec2(pos.x, pos.y), ImVec2(pos.z, pos.w), ImColor(col.Value.x / 255.f, col.Value.y / 255.f, col.Value.z / 255.f, col.Value.w), round);
 };
