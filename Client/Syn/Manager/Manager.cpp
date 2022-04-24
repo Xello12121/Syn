@@ -98,8 +98,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::GetIO().MousePos.y -= 5.f;
-
         for(auto category : hookMgr->categories) {
             for(auto mod : category->modules) {
                 if(mod->isEnabled)
@@ -118,9 +116,9 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         /* WIP */
     };
 
-out:
-    return oPresentD3D12(ppSwapChain, syncInterval, flags);
+    goto out;
 
+out:
     return oPresentD3D12(ppSwapChain, syncInterval, flags);
 };
 
@@ -151,15 +149,15 @@ auto KeyHook_Callback(uint64_t key, bool isDown) -> void {
         _KeyHook(key, isDown);
 };
 
-typedef void(__fastcall* MouseHook)(uint64_t, char, bool, uint64_t, uint64_t, int, int, BYTE);
+typedef void(__fastcall* MouseHook)(uint64_t, char, bool, int, int, void*, void*, void*);
 MouseHook _MouseHook;
 
-auto MouseHook_Callback(uint64_t a1, char action, bool isDown, uint64_t a4, uint64_t a5, int x, int y, BYTE a8) -> void {
-    
+auto MouseHook_Callback(uint64_t a1, char action, bool isDown, int x, int y, void* a6, void* a7, void* a8) -> void {
+
     if(action)
         ImGui::GetIO().MouseDown[0] = isDown;
     
-    _MouseHook(a1, action, isDown, a4, a5, x, y, a8);
+    _MouseHook(a1, action, isDown, x, y, a6, a7, a8);
 };
 
 auto Manager::initHooks(void) -> void {

@@ -88,4 +88,17 @@ public:
     };
 };
 
+class RenderUtils {
+private:
+    static ImDrawList* draw;
+public:
+    static auto setDrawList(ImDrawList*) -> void;
+    static auto getDrawList(void) -> ImDrawList*;
+public:
+    static auto getTextSize(std::string, float) -> ImVec2;
+    static auto drawText(std::string, float, ImVec2, ImColor) -> void;
+public:
+    static auto fillRect(ImVec4, ImColor, float) -> void;
+};
+
 #endif /* CLIENT_UTILS_UTILS */

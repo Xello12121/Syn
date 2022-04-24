@@ -41,3 +41,33 @@ auto Utils::debugLog(std::string output) -> void {
     
     return fStream.close();
 };
+
+/* Draw Utils */
+
+ImDrawList* RenderUtils::draw = nullptr;
+
+auto RenderUtils::setDrawList(ImDrawList* draw) -> void {
+    RenderUtils::draw = draw;
+};
+
+auto RenderUtils::getDrawList(void) -> ImDrawList* {
+    return RenderUtils::draw;
+};
+
+auto RenderUtils::getTextSize(std::string text, float fontSize) -> ImVec2 {
+    auto font = ImGui::GetFont();
+    return font->CalcTextSizeA(fontSize * 10.f, 1000.f, -1.f, text.c_str());
+};
+
+auto RenderUtils::drawText(std::string text, float fontSize, ImVec2 pos, ImColor col) -> void {
+    if(RenderUtils::draw == nullptr)
+        return;
+    draw->AddText(ImGui::GetFont(), fontSize * 10.f, pos, col, text.c_str());
+};
+
+auto RenderUtils::fillRect(ImVec4 pos, ImColor col, float round) -> void {
+    if(RenderUtils::draw == nullptr)
+        return;
+    
+    draw->AddRectFilled(ImVec2(pos.x, pos.y), ImVec2(pos.z, pos.w), col, round);
+};
