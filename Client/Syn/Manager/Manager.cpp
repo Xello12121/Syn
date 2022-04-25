@@ -117,6 +117,7 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             };
         };
         
+        ImGui::EndFrame();
         ImGui::Render();
 
         ppContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
