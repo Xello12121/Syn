@@ -6,10 +6,10 @@
 class TestModule : public Module {
 public:
     TestModule(Category* c) : Module(c, "TestModule") {
-        this->isEnabled = false;
+        this->isEnabled = true;
     };
 public:
-    auto onGameMode(GameMode*) -> void override;
+    auto onRender(void) -> void override;
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULES_MISC_TESTMOD */
