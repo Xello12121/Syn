@@ -133,9 +133,15 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ID3D12CommandQueue* d3d12CommandQueue = nullptr;
 
         ImGui::CreateContext();
+        Utils::debugLog("DX12 -> Created ImGui Context");
 
         DXGI_SWAP_CHAIN_DESC sdesc;
-        ppSwapChain->GetDesc(&sdesc);
+        
+        if(FAILED(ppSwapChain->GetDesc(&sdesc))) {
+            Utils::debugLog("DX12 -> Got DXGI Swap Chain Desc!");
+            goto out;
+        };
+
         sdesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
         sdesc.OutputWindow = window;
         sdesc.Windowed = ((GetWindowLongPtr(window, GWL_STYLE) & WS_POPUP) != 0) ? false : true;
@@ -143,24 +149,32 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         buffersCounts = sdesc.BufferCount;
 		frameContext = new FrameContext[buffersCounts];
 
+        Utils::debugLog("DX12 -> Set buffercounts and frame context!");
+
         D3D12_DESCRIPTOR_HEAP_DESC descriptorImGuiRender = {};
         descriptorImGuiRender.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         descriptorImGuiRender.NumDescriptors = buffersCounts;
         descriptorImGuiRender.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-        if (FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender))))
+        if (FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender)))) {
+            Utils::debugLog("DX12 -> Failed to create descriptor heap!");
             goto out;
+        };
         
         ID3D12CommandAllocator* allocator;
-        if (FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator))))
+        if (FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)))) {
+            Utils::debugLog("DX12 -> Failed to create command allocator!");
             goto out;
+        };
 
         for (size_t i = 0; i < buffersCounts; i++) {
             frameContext[i].commandAllocator = allocator;
-        }
+        };
 
-        if (FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList))))
+        if (FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList)))) {
+            Utils::debugLog("DX12 -> Failed to create command list!");
             goto out;
+        };
         
         D3D12_DESCRIPTOR_HEAP_DESC descriptorBackBuffers;
         descriptorBackBuffers.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -168,8 +182,10 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         descriptorBackBuffers.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         descriptorBackBuffers.NodeMask = 1;
 
-        if (d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers)) != S_OK)
-            return false;
+        if (d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers))) {
+            Utils::debugLog("DX12 -> Failed to create descriptor back buffers!");
+            goto out;
+        };
 
         const auto rtvDescriptorSize = d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
         D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = d3d12DescriptorHeapBackBuffers->GetCPUDescriptorHandleForHeapStart();
@@ -184,20 +200,30 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             rtvHandle.ptr += rtvDescriptorSize;
         };
 
+        Utils::debugLog("DX12 -> Initializing ImGui Win32");
         ImGui_ImplWin32_Init(window);
+
+        Utils::debugLog("DX12 -> Initializing ImGui Dx12");
         ImGui_ImplDX12_Init(d3d12Device, buffersCounts,
             DXGI_FORMAT_R8G8B8A8_UNORM, d3d12DescriptorHeapImGuiRender,
             d3d12DescriptorHeapImGuiRender->GetCPUDescriptorHandleForHeapStart(),
             d3d12DescriptorHeapImGuiRender->GetGPUDescriptorHandleForHeapStart());
 
+        Utils::debugLog("DX12 -> Creating ImGui Dx12 Device Objects!");
         ImGui_ImplDX12_CreateDeviceObjects();
 
-        if (d3d12CommandQueue == nullptr)
+        if (d3d12CommandQueue == nullptr) {
+            Utils::debugLog("DX12 -> Dx12 Command Queue is invalid!");
             goto out;
+        };
+
+        Utils::debugLog("DX12 -> Calling new frames!");
         
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
+
+        Utils::debugLog("DX12 -> Calling onRender");
 
         for(auto category : hookMgr->categories) {
             for(auto mod : category->modules) {
@@ -206,8 +232,12 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             };
         };
 
+        Utils::debugLog("DX12 -> Getting current frame context!");
+
         FrameContext& currentFrameContext = frameContext[ppSwapChain->GetCurrentBackBufferIndex()];
-		currentFrameContext.commandAllocator->Reset();
+		
+        Utils::debugLog("DX12 -> Resetting current frame context command allocator!");
+        currentFrameContext.commandAllocator->Reset();
 
         D3D12_RESOURCE_BARRIER barrier;
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -217,30 +247,45 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
+        Utils::debugLog("DX12 -> Command List: Setting Resource Barrier, Render Targets and Descriptor Heaps!");
+
         d3d12CommandList->Reset(currentFrameContext.commandAllocator, nullptr);
         d3d12CommandList->ResourceBarrier(1, &barrier);
         d3d12CommandList->OMSetRenderTargets(1, &currentFrameContext.main_render_target_descriptor, FALSE, nullptr);
         d3d12CommandList->SetDescriptorHeaps(1, &d3d12DescriptorHeapImGuiRender);
         
+        Utils::debugLog("DX12 -> Calling ImGui::Render");
+        
         ImGui::Render();
-
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12CommandList);
 
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
+        Utils::debugLog("DX12 -> Command List: Setting Resource Barrier");
+
         d3d12CommandList->ResourceBarrier(1, &barrier);
         d3d12CommandList->Close();
 
+        Utils::debugLog("DX12 -> Executing Command Lists!");
+
         d3d12CommandQueue->ExecuteCommandLists(1, reinterpret_cast<ID3D12CommandList* const*>(&d3d12CommandList));
 
+        Utils::debugLog("DX12 -> Releasing current frame context allocator!");
         currentFrameContext.commandAllocator->Release();
+
+        Utils::debugLog("DX12 -> Releasing current frame context render target!");
         currentFrameContext.main_render_target_resource->Release();
 
+        Utils::debugLog("DX12 -> Releasing Descriptor Heaps!");
+        
         d3d12DescriptorHeapImGuiRender->Release();
         d3d12DescriptorHeapBackBuffers->Release();
+
+        Utils::debugLog("DX12 -> Releasing Command List!");
         d3d12CommandList->Release();
 
+        Utils::debugLog("DX12 -> Releasing D3D12 Device!");
         d3d12Device->Release();
     };
 
