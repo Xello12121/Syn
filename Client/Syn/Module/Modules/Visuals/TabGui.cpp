@@ -33,8 +33,6 @@ auto TabGui::onRender(void) -> void {
     auto cRectLen = 0.f;
     auto fontSize = this->getScale();
 
-    this->alpha = 1.f;
-
     RenderUtils::setDrawList(ImGui::GetForegroundDrawList());
 
     for(auto category : categories) {
