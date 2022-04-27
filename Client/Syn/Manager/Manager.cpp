@@ -65,9 +65,6 @@ struct FrameContext {
 
 ID3D12CommandQueue* d3d12CommandQueue = nullptr;
 
-uint64_t buffersCounts = -1;
-FrameContext* frameContext;
-
 auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flags) -> HRESULT {
 
     auto deviceType = ID3D_Device_Type::INVALID_DEVICE_TYPE;
@@ -110,14 +107,20 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        for(auto category : hookMgr->categories) {
-            for(auto mod : category->modules) {
-                if(mod->isEnabled)
-                    mod->onRender();
-            };
-        };
         
-        ImGui::EndFrame();
+        auto isOpen = true;
+        ImGui::Begin("Dx11", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+        
+        ImGui::SetWindowSize(ImVec2(600.f, 600.f));
+
+        ImGui::Text("Dx11 Hook");
+
+        for(auto I = 0; I <= 50; I++)
+            ImGui::BulletText(std::string("Bullet " + std::to_string(I)).c_str());
+        
+        ImGui::End();
+
+        
         ImGui::Render();
 
         ppContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
@@ -127,19 +130,12 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d11Device->Release();
         
     } else if(deviceType == ID3D_Device_Type::D3D12) {
-
-        ID3D12DescriptorHeap* d3d12DescriptorHeapBackBuffers = nullptr;
-        ID3D12DescriptorHeap* d3d12DescriptorHeapImGuiRender = nullptr;
-        ID3D12GraphicsCommandList* d3d12CommandList = nullptr;
-        ID3D12CommandQueue* d3d12CommandQueue = nullptr;
-
         ImGui::CreateContext();
-        Utils::debugLog("DX12 -> Created ImGui Context");
 
         DXGI_SWAP_CHAIN_DESC sdesc;
-        
+
         if(FAILED(ppSwapChain->GetDesc(&sdesc))) {
-            Utils::debugLog("DX12 -> Got DXGI Swap Chain Desc!");
+            Utils::debugLog("Failed to get DXGI SwapChain Desc!");
             goto out;
         };
 
@@ -147,49 +143,50 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         sdesc.OutputWindow = window;
         sdesc.Windowed = ((GetWindowLongPtr(window, GWL_STYLE) & WS_POPUP) != 0) ? false : true;
 
-        buffersCounts = sdesc.BufferCount;
-		frameContext = new FrameContext[buffersCounts];
-
-        Utils::debugLog("DX12 -> Set buffercounts and frame context!");
+        uint64_t buffersCounts = sdesc.BufferCount;
+		auto frameContext = new FrameContext[buffersCounts];
 
         D3D12_DESCRIPTOR_HEAP_DESC descriptorImGuiRender = {};
         descriptorImGuiRender.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         descriptorImGuiRender.NumDescriptors = buffersCounts;
         descriptorImGuiRender.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-        if (FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender)))) {
-            Utils::debugLog("DX12 -> Failed to create descriptor heap!");
+        ID3D12DescriptorHeap* d3d12DescriptorHeapImGuiRender = nullptr;
+        if(FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender)))) {
+            Utils::debugLog("Failed to get Descriptor Heap (ImGui Render)");
             goto out;
         };
-        
+
         ID3D12CommandAllocator* allocator;
-        if (FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)))) {
-            Utils::debugLog("DX12 -> Failed to create command allocator!");
+	    if(FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)))) {
+            Utils::debugLog("Failed to create Command Allocator!");
             goto out;
         };
 
         for (size_t i = 0; i < buffersCounts; i++) {
-            frameContext[i].commandAllocator = allocator;
-        };
+			frameContext[i].commandAllocator = allocator;
+		};
 
-        if (FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList)))) {
-            Utils::debugLog("DX12 -> Failed to create command list!");
+        ID3D12GraphicsCommandList* d3d12CommandList = nullptr;
+        if(FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList)))) {
+            Utils::debugLog("Failed to create Command List!");
             goto out;
         };
-        
+
         D3D12_DESCRIPTOR_HEAP_DESC descriptorBackBuffers;
         descriptorBackBuffers.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         descriptorBackBuffers.NumDescriptors = buffersCounts;
         descriptorBackBuffers.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         descriptorBackBuffers.NodeMask = 1;
 
-        if (d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers))) {
-            Utils::debugLog("DX12 -> Failed to create descriptor back buffers!");
+        ID3D12DescriptorHeap* d3d12DescriptorHeapBackBuffers = nullptr;
+        if(FAILED(d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers)))) {
+            Utils::debugLog("Failed to create Descriptor Heap Back Buffers!");
             goto out;
         };
 
         const auto rtvDescriptorSize = d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-        D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = d3d12DescriptorHeapBackBuffers->GetCPUDescriptorHandleForHeapStart();
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = d3d12DescriptorHeapBackBuffers->GetCPUDescriptorHandleForHeapStart();
 
         for (size_t i = 0; i < buffersCounts; i++) {
             ID3D12Resource* pBackBuffer = nullptr;
@@ -201,43 +198,38 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             rtvHandle.ptr += rtvDescriptorSize;
         };
 
-        Utils::debugLog("DX12 -> Initializing ImGui Win32");
         ImGui_ImplWin32_Init(window);
-
-        Utils::debugLog("DX12 -> Initializing ImGui Dx12");
         ImGui_ImplDX12_Init(d3d12Device, buffersCounts,
             DXGI_FORMAT_R8G8B8A8_UNORM, d3d12DescriptorHeapImGuiRender,
             d3d12DescriptorHeapImGuiRender->GetCPUDescriptorHandleForHeapStart(),
             d3d12DescriptorHeapImGuiRender->GetGPUDescriptorHandleForHeapStart());
 
-        Utils::debugLog("DX12 -> Creating ImGui Dx12 Device Objects!");
         ImGui_ImplDX12_CreateDeviceObjects();
 
-        if (d3d12CommandQueue == nullptr) {
-            Utils::debugLog("DX12 -> Dx12 Command Queue is invalid!");
+        if(d3d12CommandQueue == nullptr) {
+            Utils::debugLog("Command Queue is invalid!");
             goto out;
         };
 
-        Utils::debugLog("DX12 -> Calling new frames!");
-        
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        Utils::debugLog("DX12 -> Calling onRender");
+        
+        auto isOpen = true;
+        ImGui::Begin("Dx12", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+        
+        ImGui::SetWindowSize(ImVec2(600.f, 600.f));
 
-        for(auto category : hookMgr->categories) {
-            for(auto mod : category->modules) {
-                if(mod->isEnabled)
-                    mod->onRender();
-            };
-        };
+        ImGui::Text("Dx12 Hook");
 
-        Utils::debugLog("DX12 -> Getting current frame context!");
+        for(auto I = 0; I <= 50; I++)
+            ImGui::BulletText(std::string("Bullet " + std::to_string(I)).c_str());
+        
+        ImGui::End();
+
 
         FrameContext& currentFrameContext = frameContext[ppSwapChain->GetCurrentBackBufferIndex()];
-		
-        Utils::debugLog("DX12 -> Resetting current frame context command allocator!");
         currentFrameContext.commandAllocator->Reset();
 
         D3D12_RESOURCE_BARRIER barrier;
@@ -248,45 +240,23 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
-        Utils::debugLog("DX12 -> Command List: Setting Resource Barrier, Render Targets and Descriptor Heaps!");
-
         d3d12CommandList->Reset(currentFrameContext.commandAllocator, nullptr);
         d3d12CommandList->ResourceBarrier(1, &barrier);
         d3d12CommandList->OMSetRenderTargets(1, &currentFrameContext.main_render_target_descriptor, FALSE, nullptr);
         d3d12CommandList->SetDescriptorHeaps(1, &d3d12DescriptorHeapImGuiRender);
-        
-        Utils::debugLog("DX12 -> Calling ImGui::Render");
-        
+
         ImGui::Render();
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12CommandList);
 
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
-        Utils::debugLog("DX12 -> Command List: Setting Resource Barrier");
-
         d3d12CommandList->ResourceBarrier(1, &barrier);
         d3d12CommandList->Close();
 
-        Utils::debugLog("DX12 -> Executing Command Lists!");
-
         d3d12CommandQueue->ExecuteCommandLists(1, reinterpret_cast<ID3D12CommandList* const*>(&d3d12CommandList));
-
-        Utils::debugLog("DX12 -> Releasing current frame context allocator!");
-        currentFrameContext.commandAllocator->Release();
-
-        Utils::debugLog("DX12 -> Releasing current frame context render target!");
-        currentFrameContext.main_render_target_resource->Release();
-
-        Utils::debugLog("DX12 -> Releasing Descriptor Heaps!");
         
-        d3d12DescriptorHeapImGuiRender->Release();
-        d3d12DescriptorHeapBackBuffers->Release();
-
-        Utils::debugLog("DX12 -> Releasing Command List!");
-        d3d12CommandList->Release();
-
-        Utils::debugLog("DX12 -> Releasing D3D12 Device!");
+        currentFrameContext.main_render_target_resource->Release();
         d3d12Device->Release();
     };
 
@@ -338,7 +308,9 @@ MouseHook _MouseHook;
 
 auto MouseHook_Callback(uint64_t a1, char action, bool isDown, int x, int y, void* a6, void* a7, void* a8) -> void {
 
-    if(action)
+    Utils::debugLog(std::to_string(action));
+
+    if(action > 0 && action < 3)
         ImGui::GetIO().MouseDown[0] = isDown;
     
     _MouseHook(a1, action, isDown, x, y, a6, a7, a8);
@@ -360,7 +332,7 @@ auto Manager::initHooks(void) -> void {
 
     /* Key Hook */
     
-    auto sig = Mem::findSig("48 89 5C 24 ? 57 48 83 EC 30 8B 05 ? ? ? ? 8B DA");
+    auto sig = Mem::findSig("48 ? ? 48 ? ? ? 4C 8D 05 ? ? ? ? 89");
 
     if(!sig)
         return Utils::debugLog("Failed to find Sig for Key Hook");
@@ -386,7 +358,7 @@ auto Manager::initHooks(void) -> void {
     
     /* Mob Tick Hook */
 
-    sig = Mem::findSig("48 89 5C 24 08 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 60");
+    sig = Mem::findSig("48 89 5C 24 08 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC");
     
     if(!sig)
         return Utils::debugLog("Failed to find Sig for Actor_BlockSource");
@@ -442,8 +414,8 @@ auto Manager::init(void) -> void {
     auto combat = this->getCategory("Combat");
 
     if(combat != nullptr) {
-        new Killaura(combat);
-        new Hitbox(combat);
+        //new Killaura(combat);
+        //new Hitbox(combat);
     };
 
     /* Movement */
@@ -451,7 +423,7 @@ auto Manager::init(void) -> void {
     auto movement = this->getCategory("Movement");
 
     if(movement != nullptr) {
-        new AirJump(movement);
+        //new AirJump(movement);
     };
 
     /* Player */
@@ -459,7 +431,7 @@ auto Manager::init(void) -> void {
     auto player = this->getCategory("Player");
 
     if(player != nullptr) {
-        new AutoSprint(player);
+        //new AutoSprint(player);
     };
 
     /* Visuals */
@@ -467,8 +439,8 @@ auto Manager::init(void) -> void {
     auto visuals = this->getCategory("Visuals");
 
     if(visuals != nullptr) {
-        new TabGui(visuals);
-        new ClickGui(visuals);
+        //new TabGui(visuals);
+        //new ClickGui(visuals);
     };
 
     /* World */
@@ -484,7 +456,7 @@ auto Manager::init(void) -> void {
     auto misc = this->getCategory("Misc");
 
     if(misc != nullptr) {
-        new TestModule(misc);
+        //new TestModule(misc);
     };
 
     for(;;) {
