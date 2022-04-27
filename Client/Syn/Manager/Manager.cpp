@@ -142,12 +142,9 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         
         if(!dx12Init) {
             ImGui::CreateContext();
-
+				
             DXGI_SWAP_CHAIN_DESC sdesc;
-
-            if(FAILED(ppSwapChain->GetDesc(&sdesc)))
-                goto out;
-
+            ppSwapChain->GetDesc(&sdesc);
             sdesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
             sdesc.OutputWindow = window;
             sdesc.Windowed = ((GetWindowLongPtr(window, GWL_STYLE) & WS_POPUP) != 0) ? false : true;
@@ -160,18 +157,19 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             descriptorImGuiRender.NumDescriptors = buffersCounts;
             descriptorImGuiRender.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-            if(FAILED(d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender))))
-                goto out;
-
-            if(FAILED(d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator))))
-                goto out;
+            if (d3d12Device->CreateDescriptorHeap(&descriptorImGuiRender, IID_PPV_ARGS(&d3d12DescriptorHeapImGuiRender)) != S_OK)
+                return false;
+            
+            if (d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)) != S_OK)
+                return false;
 
             for (size_t i = 0; i < buffersCounts; i++) {
                 frameContext[i].commandAllocator = allocator;
             };
 
-            if(FAILED(d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList))))
-                goto out;
+            if (d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, NULL, IID_PPV_ARGS(&d3d12CommandList)) != S_OK ||
+                d3d12CommandList->Close() != S_OK)
+                return false;
 
             D3D12_DESCRIPTOR_HEAP_DESC descriptorBackBuffers;
             descriptorBackBuffers.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -179,8 +177,8 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             descriptorBackBuffers.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
             descriptorBackBuffers.NodeMask = 1;
 
-            if(FAILED(d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers))))
-                goto out;
+            if (d3d12Device->CreateDescriptorHeap(&descriptorBackBuffers, IID_PPV_ARGS(&d3d12DescriptorHeapBackBuffers)) != S_OK)
+                return false;
 
             const auto rtvDescriptorSize = d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
             D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = d3d12DescriptorHeapBackBuffers->GetCPUDescriptorHandleForHeapStart();
@@ -204,18 +202,15 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             ImGui_ImplDX12_CreateDeviceObjects();
 
             dx12Init = true;
-        }
-
-        if(d3d12CommandQueue == nullptr) {
-            Utils::debugLog("Command Queue is invalid!");
-            goto out;
         };
 
+        if(d3d12CommandQueue == nullptr)
+            goto out;
+        
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        
         auto isOpen = true;
         ImGui::Begin("Dx12", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
         
@@ -227,7 +222,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             ImGui::BulletText(std::string("Bullet " + std::to_string(I)).c_str());
         
         ImGui::End();
-
 
         FrameContext& currentFrameContext = frameContext[ppSwapChain->GetCurrentBackBufferIndex()];
         currentFrameContext.commandAllocator->Reset();
@@ -255,9 +249,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d12CommandList->Close();
 
         d3d12CommandQueue->ExecuteCommandLists(1, reinterpret_cast<ID3D12CommandList* const*>(&d3d12CommandList));
-        
-        //currentFrameContext.main_render_target_resource->Release();
-        //d3d12Device->Release();
     };
 
     goto out;
