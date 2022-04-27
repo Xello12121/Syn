@@ -299,8 +299,6 @@ MouseHook _MouseHook;
 
 auto MouseHook_Callback(uint64_t a1, char action, bool isDown, int x, int y, void* a6, void* a7, void* a8) -> void {
 
-    Utils::debugLog(std::to_string(action));
-
     if(action > 0 && action < 3)
         ImGui::GetIO().MouseDown[0] = isDown;
     
