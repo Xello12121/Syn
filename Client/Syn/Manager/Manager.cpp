@@ -238,7 +238,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d12CommandList->OMSetRenderTargets(1, &currentFrameContext.main_render_target_descriptor, FALSE, nullptr);
         d3d12CommandList->SetDescriptorHeaps(1, &d3d12DescriptorHeapImGuiRender);
 
-        ImGui::EndFrame();
         ImGui::Render();
         
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12CommandList);
@@ -251,6 +250,7 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
 
         d3d12CommandQueue->ExecuteCommandLists(1, reinterpret_cast<ID3D12CommandList* const*>(&d3d12CommandList));
         
+        d3d12DescriptorHeapImGuiRender->Release();
         d3d12DescriptorHeapBackBuffers->Release();
         d3d12CommandList->Release();
         allocator->Release();
