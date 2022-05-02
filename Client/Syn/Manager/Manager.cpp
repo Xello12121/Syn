@@ -72,9 +72,15 @@ ID3D12GraphicsCommandList* d3d12CommandList = nullptr;
 ID3D12CommandAllocator* allocator = nullptr;
 
 ID3D12CommandQueue* d3d12CommandQueue = nullptr;
-bool dx12Init = false;
+
+bool initContext = false;
 
 auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flags) -> HRESULT {
+
+    if(!initContext) {
+        ImGui::CreateContext();
+        initContext = true;
+    };
 
     auto deviceType = ID3D_Device_Type::INVALID_DEVICE_TYPE;
     auto window = (HWND)FindWindowA(nullptr, (LPCSTR)"Minecraft");
@@ -107,8 +113,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         
         pBackBuffer->Release();
 
-        ImGui::CreateContext();
-
         ImGui_ImplWin32_Init(window);
 	    ImGui_ImplDX11_Init(d3d11Device, ppContext);
 
@@ -139,8 +143,6 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d11Device->Release();
         
     } else if(deviceType == ID3D_Device_Type::D3D12) {
-        
-        ImGui::CreateContext();
             
         DXGI_SWAP_CHAIN_DESC sdesc;
         ppSwapChain->GetDesc(&sdesc);
