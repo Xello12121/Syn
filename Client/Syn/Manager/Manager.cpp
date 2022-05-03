@@ -125,12 +125,11 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         auto isOpen = true;
         ImGui::Begin("Dx11", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
         
-        ImGui::SetWindowSize(ImVec2(600.f, 600.f));
+        ImGui::SetWindowSize(ImVec2(600.f, 400.f));
 
         ImGui::Text("Dx11 Hook");
 
-        for(auto I = 0; I <= 50; I++)
-            ImGui::BulletText(std::string("Bullet " + std::to_string(I)).c_str());
+        ImGui::Text(std::string("Fuck you Expando").c_str());
         
         ImGui::End();
 
