@@ -47,6 +47,34 @@ auto Mem::findSig(const char* sig, const char* mod) -> uintptr_t {
 };
 
 auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
+    uintptr_t res = NULL;
+
+    if(baseAddr != NULL) {
+        auto curr = baseAddr;
+
+        for(auto I = 0; I < offsets.size(); I++) {
+
+            if((uintptr_t*)curr == nullptr || *(uintptr_t*)curr == NULL)
+                break;
+            
+            curr = *(uintptr_t*)curr;
+
+            if((uintptr_t*)(curr + offsets[I]) == nullptr || *(uintptr_t*)(curr + offsets[I]) == NULL)
+                break;
+            
+            curr += offsets[I];
+
+        };
+
+        if(curr != NULL)
+            res = curr;
+        
+    };
+
+    return res;
+};
+
+/*auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
     uintptr_t addr = baseAddr;
     
     for (int I = 0; I < offsets.size(); I++){
@@ -63,4 +91,4 @@ auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets)
     };
 
     return addr;
-};
+};*/
