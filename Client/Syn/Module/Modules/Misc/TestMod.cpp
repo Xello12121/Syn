@@ -3,24 +3,22 @@
 #include "../../../Manager/Manager.h"
 
 auto TestModule::onRender(void) -> void {
-    RenderUtils::setDrawList(ImGui::GetBackgroundDrawList());
+    ImGui::Begin(std::string("Test Console").c_str());
 
-    auto player = MC::getLocalPlayer();
-    
-    auto instance = MC::getClientInstance();
-    auto guiData = (instance != nullptr ? instance->getGuiData() : nullptr);
-    auto mcGame = (instance != nullptr ? instance->getMinecraftGame() : nullptr);
+    if(!this->updatedWindowSize) {
+        ImGui::SetWindowSize(ImVec2(600.f, 600.f));
+        this->updatedWindowSize = true;
+    };
 
-    if(guiData == nullptr || mcGame == nullptr)
-        return;
+    if(ImGui::CollapsingHeader(std::string("Entity List").c_str())) {
+        for(auto [runtimeId, entity] : this->category->manager->entityMap) {
+            ImGui::Text(std::to_string(runtimeId).c_str());
+        };
+    };
 
-    auto res = guiData->res;
-    auto fontSize = guiData->scale;
-    auto text = std::string(mcGame != nullptr && mcGame->canUseKeys && player != nullptr ? player->getNameTag().c_str() : player != nullptr ? "Menu" : "Main Menu");
-    
-    auto textRect = RenderUtils::getTextSize(text, fontSize);
-    auto textPos = ImVec4(5.f, res.y - textRect.y, 5.f + textRect.x, res.y);
+    ImGui::End();
+};
 
-    RenderUtils::fillRect(textPos, ImColor(25.f, 25.f, 25.f, .8f), 0.f);
-    RenderUtils::drawText(text, fontSize, ImVec2(textPos.x + 2.f, textPos.y), ImColor(255.f, 255.f, 255.f));
+auto TestModule::onEnable(void) -> void {
+    this->updatedWindowSize = false;
 };
