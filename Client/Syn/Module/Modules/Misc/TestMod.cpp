@@ -9,48 +9,49 @@ auto TestModule::onRender(void) -> void {
         ImGui::SetWindowSize(ImVec2(600.f, 600.f));
         this->updatedWindowSize = true;
     };
-
-    auto player = MC::getLocalPlayer();
     
-    if(ImGui::TreeNode(std::string("Entity Map").c_str())) {
-            
-        for(auto [runtimeId, entity] : category->manager->entityMap) {
+    auto manager = this->category->manager;
+    
+    for(auto category : manager->categories) {
+        
+        ImGui::Spacing();
+        ImGui::Spacing();
 
-            ImGui::Spacing();
+        if(ImGui::TreeNode(category->name.c_str())) {
             
-            if(ImGui::TreeNode(std::to_string(runtimeId).c_str())) {
+            for(auto mod : category->modules) {
                 
-                ImGui::Text(std::string("ID: " + std::to_string(runtimeId)).c_str());
+                ImGui::Spacing();
 
-                if(ImGui::TreeNode(std::string("Options").c_str())) {
-                    
-                    if(ImGui::Button(std::string("Boost").c_str())) {
-                        
-                        auto lerpTo = Vec3(0.f, 1.f, 0.f);
-                        entity->lerpMotion(&lerpTo);
+                if(ImGui::TreeNode(mod->name.c_str())) {
 
+                    ImGui::Text(std::string("Name: " + mod->name).c_str());
+                    ImGui::Text(std::string("Category: " + category->name).c_str());
+                    ImGui::Text(std::string("Is Enabled: " + std::string(mod->isEnabled ? "True" : "False")).c_str());
+
+                    if(ImGui::Button(std::string(mod->isEnabled ? "Disable" : "Enable").c_str())) {
+                        mod->isEnabled = !mod->isEnabled;
                     };
-
+                    
                     ImGui::TreePop();
 
                 };
 
-                ImGui::TreePop();
-
             };
 
-            ImGui::Spacing();
+            ImGui::TreePop();
 
         };
 
-        ImGui::TreePop();
-
     };
-
 
     ImGui::End();
 };
 
 auto TestModule::onEnable(void) -> void {
     this->updatedWindowSize = false;
+};
+
+auto TestModule::onDisable(void) -> void {
+    this->isEnabled = true;
 };
