@@ -29,6 +29,10 @@ public:
     auto getLevel(void) -> Level* {
         return *(Level**)((uintptr_t)(this) + 0x368);
     };
+public:
+    auto _getEntityTypeId(void) -> uint8_t {
+        return *(uint8_t*)((uintptr_t)(this) + 0x3D4);
+    };
 private:
     virtual auto Function0(void) -> void;
     virtual auto Function1(void) -> void;
