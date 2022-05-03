@@ -77,11 +77,6 @@ bool initContext = false;
 
 auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flags) -> HRESULT {
 
-    if(!initContext) {
-        ImGui::CreateContext();
-        initContext = true;
-    };
-
     auto deviceType = ID3D_Device_Type::INVALID_DEVICE_TYPE;
     auto window = (HWND)FindWindowA(nullptr, (LPCSTR)"Minecraft");
 
@@ -102,6 +97,12 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
     };
     
     if(deviceType == ID3D_Device_Type::D3D11) {
+
+        if(!initContext) {
+            ImGui::CreateContext();
+            initContext = true;
+        };
+        
         ID3D11DeviceContext* ppContext = nullptr;
         d3d11Device->GetImmediateContext(&ppContext);
         
@@ -143,6 +144,9 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d11Device->Release();
         
     } else if(deviceType == ID3D_Device_Type::D3D12) {
+
+        if(!initContext)
+            ImGui::CreateContext();
             
         DXGI_SWAP_CHAIN_DESC sdesc;
         ppSwapChain->GetDesc(&sdesc);
@@ -197,11 +201,14 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
             pBackBuffer->Release();
         };
 
-        ImGui_ImplWin32_Init(window);
-        ImGui_ImplDX12_Init(d3d12Device, buffersCounts,
-            DXGI_FORMAT_R8G8B8A8_UNORM, d3d12DescriptorHeapImGuiRender,
-            d3d12DescriptorHeapImGuiRender->GetCPUDescriptorHandleForHeapStart(),
-            d3d12DescriptorHeapImGuiRender->GetGPUDescriptorHandleForHeapStart());
+        if(!initContext) {
+            ImGui_ImplWin32_Init(window);
+            ImGui_ImplDX12_Init(d3d12Device, buffersCounts,
+                DXGI_FORMAT_R8G8B8A8_UNORM, d3d12DescriptorHeapImGuiRender,
+                d3d12DescriptorHeapImGuiRender->GetCPUDescriptorHandleForHeapStart(),
+                d3d12DescriptorHeapImGuiRender->GetGPUDescriptorHandleForHeapStart());
+            initContext = true;
+        };
 
         if(d3d12CommandQueue == nullptr)
             goto out;
@@ -213,12 +220,11 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         auto isOpen = true;
         ImGui::Begin("Dx12", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
         
-        ImGui::SetWindowSize(ImVec2(600.f, 600.f));
+        ImGui::SetWindowSize(ImVec2(600.f, 400.f));
 
         ImGui::Text("Dx12 Hook");
 
-        for(auto I = 0; I <= 50; I++)
-            ImGui::BulletText(std::string("Bullet " + std::to_string(I)).c_str());
+        ImGui::Text(std::string("Fuck you Expando").c_str());
         
         ImGui::End();
 
@@ -238,6 +244,7 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         d3d12CommandList->OMSetRenderTargets(1, &currentFrameContext.main_render_target_descriptor, FALSE, nullptr);
         d3d12CommandList->SetDescriptorHeaps(1, &d3d12DescriptorHeapImGuiRender);
 
+        ImGui::EndFrame();
         ImGui::Render();
         
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12CommandList);
@@ -250,7 +257,7 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
 
         d3d12CommandQueue->ExecuteCommandLists(1, reinterpret_cast<ID3D12CommandList* const*>(&d3d12CommandList));
         
-        d3d12DescriptorHeapImGuiRender->Release();
+        //d3d12DescriptorHeapImGuiRender->Release();
         d3d12DescriptorHeapBackBuffers->Release();
         d3d12CommandList->Release();
         allocator->Release();
