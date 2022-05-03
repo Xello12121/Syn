@@ -10,6 +10,9 @@ public:
     };
 public:
     auto onRender(void) -> void override;
+    auto onEnable(void) -> void override;
+private:
+    bool updatedWindowSize = false;
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULES_MISC_TESTMOD */
