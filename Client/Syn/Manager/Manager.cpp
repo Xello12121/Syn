@@ -12,17 +12,17 @@ Manager::Manager(Client* client) {
     this->init();
 };
 
-typedef void (__thiscall* Actor_BlockSource)(Actor*, void*, void*);
-Actor_BlockSource _Actor_BlockSource;
+typedef void (__thiscall* Actor_Tick)(Actor*, void*);
+Actor_Tick _Actor_Tick;
 
 Manager* hookMgr = nullptr;
 
-auto Actor_BlockSource_Callback(Actor* e, void* a2, void* a3) -> void {
+auto Actor_Tick_Callback(Actor* e, void* a2) -> void {
     
     if(hookMgr != nullptr)
         hookMgr->entityMap[e->runtimeId] = e;
 
-    _Actor_BlockSource(e, a2, a3);
+    _Actor_Tick(e, a2);
 };
 
 typedef void (__thiscall* GameMode_Tick)(GameMode*);
@@ -313,7 +313,8 @@ auto MouseHook_Callback(uint64_t a1, char action, bool isDown, int x, int y, voi
     if(action > 0 && action < 3)
         ImGui::GetIO().MouseDown[0] = isDown;
     
-    _MouseHook(a1, action, isDown, x, y, a6, a7, a8);
+    if(!ImGui::GetIO().WantCaptureMouse)
+        _MouseHook(a1, action, isDown, x, y, a6, a7, a8);
 };
 
 auto Manager::initHooks(void) -> void {
@@ -358,15 +359,15 @@ auto Manager::initHooks(void) -> void {
     
     /* Mob Tick Hook */
 
-    sig = Mem::findSig("48 89 5C 24 18 48 89 6C 24 20 56 57 41 54 41 56 41 57 48 83 EC 70 48 8B 05 ? ? ? ? 48 33 C4 48 89 44 24 68 4C 8B E2");
+    sig = Mem::findSig("40 53 48 83 EC 50 48 8B D9 48 83 B9 ? ? ? ? ? 0F 84 ? ? ? ? 48 83");
     
     if(!sig)
-        return Utils::debugLog("Failed to find Sig for Actor_BlockSource");
+        return Utils::debugLog("Failed to find Sig for Entity Tick Hook");
     
-    if(MH_CreateHook((void*)sig, &Actor_BlockSource_Callback, reinterpret_cast<LPVOID*>(&_Actor_BlockSource)) != MH_OK)
-        return Utils::debugLog("Failed to create hook for Actor_BlockSource");
+    if(MH_CreateHook((void*)sig, &Actor_Tick_Callback, reinterpret_cast<LPVOID*>(&_Actor_Tick)) != MH_OK)
+        return Utils::debugLog("Failed to create hook for Entity Tick");
     
-    Utils::debugLog("Manager: Enabling Actor BlockSource Tick Hook");
+    Utils::debugLog("Manager: Enabling Entity Tick Hook");
     MH_EnableHook((void*)sig);
 
     
@@ -414,8 +415,8 @@ auto Manager::init(void) -> void {
     auto combat = this->getCategory("Combat");
 
     if(combat != nullptr) {
-        //new Killaura(combat);
-        //new Hitbox(combat);
+        new Killaura(combat);
+        new Hitbox(combat);
     };
 
     /* Movement */
