@@ -9,7 +9,7 @@ auto Hitbox::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive())
             continue;
         
-        if(types.find(entity->getEntityTypeId()) == types.end())
+        if(types.find(entity->_getEntityTypeId()) == types.end())
             types[entity->getEntityTypeId()] = Vec2<float>(entity->collision.x, entity->collision.y);
         
         entity->setSize(2.f, 6.f);
@@ -26,10 +26,10 @@ auto Hitbox::onDisable(void) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive())
             continue;
         
-        if(types.find(entity->getEntityTypeId()) == types.end())
+        if(types.find(entity->_getEntityTypeId()) == types.end())
             continue;
         
-        auto collision = types[entity->getEntityTypeId()];
+        auto collision = types[entity->_getEntityTypeId()];
         entity->setSize(collision.x, collision.y);
     };
 };
