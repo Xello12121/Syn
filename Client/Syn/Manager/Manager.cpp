@@ -122,18 +122,15 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ImGui::NewFrame();
 
         
-        auto isOpen = true;
-        ImGui::Begin("Dx11", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
-        
-        ImGui::SetWindowSize(ImVec2(600.f, 400.f));
-
-        ImGui::Text("Dx11 Hook");
-
-        ImGui::Text(std::string("Fuck you Expando").c_str());
-        
-        ImGui::End();
+        for(auto category : hookMgr->categories) {
+            for(auto mod : category->modules) {
+                if(mod->isEnabled)
+                    mod->onRender();
+            };
+        };
 
         
+        ImGui::EndFrame();
         ImGui::Render();
 
         ppContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
@@ -216,16 +213,12 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        auto isOpen = true;
-        ImGui::Begin("Dx12", &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysVerticalScrollbar);
-        
-        ImGui::SetWindowSize(ImVec2(600.f, 400.f));
-
-        ImGui::Text("Dx12 Hook");
-
-        ImGui::Text(std::string("Fuck you Expando").c_str());
-        
-        ImGui::End();
+        for(auto category : hookMgr->categories) {
+            for(auto mod : category->modules) {
+                if(mod->isEnabled)
+                    mod->onRender();
+            };
+        };
 
         FrameContext& currentFrameContext = frameContext[ppSwapChain->GetCurrentBackBufferIndex()];
         currentFrameContext.commandAllocator->Reset();
@@ -365,7 +358,7 @@ auto Manager::initHooks(void) -> void {
     
     /* Mob Tick Hook */
 
-    sig = Mem::findSig("48 89 5C 24 08 4C 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC");
+    sig = Mem::findSig("48 89 5C 24 18 48 89 6C 24 20 56 57 41 54 41 56 41 57 48 83 EC 70 48 8B 05 ? ? ? ? 48 33 C4 48 89 44 24 68 4C 8B E2");
     
     if(!sig)
         return Utils::debugLog("Failed to find Sig for Actor_BlockSource");
@@ -463,7 +456,7 @@ auto Manager::init(void) -> void {
     auto misc = this->getCategory("Misc");
 
     if(misc != nullptr) {
-        //new TestModule(misc);
+        new TestModule(misc);
     };
 
     for(;;) {
