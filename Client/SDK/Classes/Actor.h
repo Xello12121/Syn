@@ -78,9 +78,6 @@ public:
     virtual auto getYawSpeedInDegreesPerSecond(void) -> float;
     virtual auto getInterpolatedWalkAnimSpeed(float) -> float;
     virtual auto getWorldPosition(void) -> Vec3<float>;
-private:
-    virtual auto Function37(void) -> void;
-public:
     virtual auto updateEntityInside(void) -> void;
     virtual auto updateEntityInside(AABB<float>*) -> void;
     virtual auto isFireImmune(void) -> bool;
@@ -88,6 +85,7 @@ private:
     virtual auto Function41(void) -> void;
 public:
     virtual auto blockedByShield(uintptr_t*, Actor*) -> void;
+    virtual auto canDisableShield(void) -> bool;
     virtual auto teleportTo(Vec3<float>*, bool, int, int) -> void;
     virtual auto tryTeleportTo(Vec3<float>*, bool, bool, int, int) -> void;
     virtual auto chorusFruitTeleport(Vec3<float>*) -> void;
@@ -138,6 +136,9 @@ private:
 public:
     virtual auto canSee(Vec3<float>*) -> bool;
     virtual auto canSee(Actor*) -> bool;
+private:
+    virtual auto Function85(void) -> void;
+public:
     virtual auto isSkyLit(float) -> bool;
     virtual auto getBrightness(float) -> float;
 private:
@@ -175,13 +176,10 @@ public:
     virtual auto isAffectedByWaterBottle(void) -> bool;
     virtual auto canAttack(Actor*, bool) -> bool;
     virtual auto setTarget(Actor*) -> void;
-private:
-    virtual auto Function112(void) -> void;
-public:
+    virtual auto findAttackTarget(void) -> Actor*;
     virtual auto isValidTarget(Actor*) -> bool;
     virtual auto attack(Actor*, int*) -> bool;
     virtual auto performRangedAttack(Actor*, float) -> void;
-    virtual auto adjustDamageAmount(int*) -> void;
     virtual auto getEquipmentCount(void) -> __int64;
     virtual auto setOwner(__int64) -> void;
     virtual auto setSitting(bool) -> void;
@@ -205,7 +203,6 @@ public:
     virtual auto getAmbientSound(void) -> int;
     virtual auto isInvulnerableTo(uintptr_t*) -> bool;
     virtual auto getBlockDamageCause(uintptr_t const &) -> int;
-    virtual auto actuallyHurt(int, uintptr_t*, bool) -> void;
     virtual auto animateHurt(void) -> void;
     virtual auto doFireHurt(int) -> bool;
     virtual auto onLightningHit(void) -> void;

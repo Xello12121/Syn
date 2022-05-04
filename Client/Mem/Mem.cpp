@@ -46,49 +46,74 @@ auto Mem::findSig(const char* sig, const char* mod) -> uintptr_t {
     return NULL;
 };
 
-auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
-    uintptr_t res = NULL;
-
-    if(baseAddr != NULL) {
-        auto curr = baseAddr;
-
-        for(auto I = 0; I < offsets.size(); I++) {
-
-            if((uintptr_t*)curr == nullptr || *(uintptr_t*)curr == NULL)
-                break;
-            
-            curr = *(uintptr_t*)curr;
-
-            if((uintptr_t*)(curr + offsets[I]) == nullptr || *(uintptr_t*)(curr + offsets[I]) == NULL)
-                break;
-            
-            curr += offsets[I];
-
-        };
-
-        if(curr != NULL)
-            res = curr;
-        
-    };
-
-    return res;
-};
+#include "../Utils/Utils.h"
 
 /*auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
-    uintptr_t addr = baseAddr;
+
+    uintptr_t res = baseAddr;
+    auto I = 0;
     
-    for (int I = 0; I < offsets.size(); I++){
+    do {
         
-        if(addr == NULL)
-            break;
+        //
+
+    } while(res != NULL && I < offsets.size());
+
+    if(res != NULL) {
         
-        addr = *(uintptr_t*)(addr);
-        
-        if ((uintptr_t*)(addr) == nullptr)
-            return addr;
-        
-        addr += offsets[I];
+        std::ostringstream o;
+        o << std::hex << res << std::endl;
+
+        Utils::debugLog(o.str());
+
     };
+
+    return (res != baseAddr ? res : NULL);
+};*/
+
+/*auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
+    
+    auto hwnd = GetModuleHandleA("Minecraft.Windows.exe");
+    auto addr = (uintptr_t)(hwnd) + baseAddr;
+    auto I = 0;
+
+    if(hwnd == NULL)
+        return 0;
+    
+    do {
+        
+        auto currRes = reinterpret_cast<uintptr_t*>((uintptr_t)(addr) + offsets[I]);
+
+        if(currRes == nullptr) {
+            return 0;
+        };
+        
+        addr = *(uintptr_t*)(addr) + (uintptr_t)offsets[I];
+        I++;
+
+    } while(I < offsets.size());
 
     return addr;
 };*/
+
+auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t* {
+    
+    auto ptr = baseAddr;
+    auto I = 0;
+
+    do {
+
+        if(ptr == NULL || *(uintptr_t**)ptr == nullptr)
+            return nullptr;
+        
+        if(*(uintptr_t*)ptr + offsets[I] == NULL)
+            return nullptr;
+        
+        ptr = *(uintptr_t*)ptr + offsets[I];
+        I++;
+
+    } while(I < offsets.size());
+
+    return (uintptr_t*)ptr;
+
+};

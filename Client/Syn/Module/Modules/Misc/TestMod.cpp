@@ -11,6 +11,50 @@ auto TestModule::onRender(void) -> void {
     };
     
     auto manager = this->category->manager;
+
+    auto player = MC::getLocalPlayer();
+
+    if(player != nullptr) {
+        if(ImGui::TreeNode(std::string("Player").c_str())) {
+            
+            if(ImGui::TreeNode(std::string("Position").c_str())) {
+                
+                auto pos = *player->getPos();
+                
+                ImGui::Text(std::string("X: " + std::to_string(pos.x)).c_str());
+                ImGui::Text(std::string("Y: " + std::to_string(pos.y)).c_str());
+                ImGui::Text(std::string("Z: " + std::to_string(pos.z)).c_str());
+
+                ImGui::TreePop();
+
+            };
+
+            if(ImGui::TreeNode(std::string("Properties").c_str())) {
+
+                ImGui::Text(std::string("On Ground: " + std::string(player->onGround ? "True" : "False")).c_str());
+                ImGui::Text(std::string("Is Jumping: " + std::string(player->isJumping() ? "True" : "False")).c_str());
+                
+                if(ImGui::Button(std::string("Boost").c_str())) {
+                    
+                    auto lerpTo = Vec3(0.f, 1.f, 0.f);
+                    player->lerpMotion(&lerpTo);
+
+                };
+
+                if(ImGui::Button(std::string("Swing Arm").c_str())) {
+                    
+                    player->swing();
+
+                };
+
+                ImGui::TreePop();
+
+            };
+
+            ImGui::TreePop();
+
+        };
+    };
     
     for(auto category : manager->categories) {
         
