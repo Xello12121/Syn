@@ -3,6 +3,142 @@
 
 #include "Level.h"
 
+enum EntityType {
+    /* Drops */
+    
+    Dropped_Item = 64,
+    Experience_Orb = 69,
+    
+    /* Blocks */
+    
+    TNT = 65,
+    Falling_Block = 66,
+    Moving_Block = 67,
+    
+    /* Immobile and Projectiles */
+    
+    Armor_Stand = 61,
+    Bottle_Of_Enchanting = 68,
+    Eye_Of_Ender = 70,
+    Ender_Crystal = 71,
+    Fireworks_Rocket = 72,
+    Thrown_Trident = 73,
+    Shulker_Bullet = 76,
+    Fishing_Hook = 77,
+    Dragon_Fireball = 79,
+    Arrow = 80,
+    Snowball = 81,
+    Egg = 82,
+    Painting = 83,
+    Minecart = 84,
+    Fireball = 85,
+    Splash_Potion = 86,
+    Ender_Pearl = 87,
+    Leash_Knot = 88,
+    Wither_Skull = 89,
+    Boat = 90,
+    Wither_Skull_Dangerous = 91,
+    Lightning_Bolt = 93,
+    Small_Fireball = 94,
+    Area_Effect_Cloud = 95,
+    Hopper_Minecart = 96,
+    TNT_Minecart = 97,
+    Chest_Minecart = 98,
+    Command_Block_Minecart = 100,
+    Lingering_Potion = 101,
+    Llama_Spit = 102,
+    Evocation_Fang = 103,
+    Ice_Bomb = 106,
+    Balloon = 107,
+    
+    /* Hostile Mobs */
+
+    Zombie = 32,
+    Creeper = 33,
+    Skeleton = 34,
+    Spider = 35,
+    Zombie_Pigman = 36,
+    Slime = 37,
+    Enderman = 38,
+    Silverfish = 39,
+    Cave_Spider = 40,
+    Ghast = 41,
+    Magma_Cube = 42,
+    Blaze = 43,
+    Zombie_Villager = 44,
+    Witch = 45,
+    Stray = 46,
+    Husk = 47,
+    Wither_Skeleton = 48,
+    Guardian = 49,
+    Elder_Guardian = 50,
+    Wither = 52,
+    Ender_Dragon = 53,
+    Shulker = 54,
+    Endermite = 55,
+    Vindicator = 57,
+    Phantom = 58,
+    Ravager = 59,
+    Evocation_Villager = 104,
+    Vex = 105,
+    Drowned = 110,
+    Pillager = 114,
+    Zombie_Villager_V2 = 116,
+    Piglin = 123,
+    Hoglin = 124,
+    Zoglin = 126,
+    Piglin_Brute = 127,
+
+    /* Passive and Neutral Mobs */
+
+    Chicken = 10,
+    Cow = 11,
+    Pig = 12,
+    Sheep = 13,
+    Wolf = 14,
+    Villager = 15,
+    Mooshroom = 16,
+    Squid = 17,
+    Rabbit = 18,
+    Bat = 19,
+    Iron_Golem = 20,
+    Snow_Golem = 21,
+    Ocelot = 22,
+    Horse = 23,
+    Donkey = 24,
+    Mule = 25,
+    Skeleton_Horse = 26,
+    Zombie_Horse = 27,
+    Polar_Bear = 28,
+    Llama = 29,
+    Parrot = 30,
+    Dolphin = 31,
+    Turtle = 74,
+    Cat = 75,
+    Pufferfish = 108,
+    Salmon = 109,
+    Tropical_Fish = 111,
+    Cod = 112,
+    Panda = 113,
+    Villager_V2 = 115,
+    Wandering_Trader = 118,
+    Fox = 121,
+    Bee = 122,
+    Strider = 125,
+    Goat = 128,
+
+    /* Other */
+
+    Client_Player = 63,
+    Shield = 117,
+    
+    Elder_Guardian_Ghost = 120,
+    NPC = 51,
+    Agent = 56,
+    Tripod_Camera = 62,
+    Chalkboard = 78
+};
+
 class Actor {
 private:
     char pad_0008[304];    //0x0008
@@ -26,13 +162,250 @@ private:
 public:
 	uint64_t runtimeId;    //0x0550
 public:
+    
     auto getLevel(void) -> Level* {
         return *(Level**)((uintptr_t)(this) + 0x368);
     };
+
 public:
-    auto _getEntityTypeId(void) -> uint8_t {
-        return *(uint8_t*)((uintptr_t)(this) + 0x3D4);
+
+    auto isHostileType(void) -> bool {
+        auto type = this->getEntityTypeId();
+
+        switch(type) {
+            case EntityType::Zombie:
+                return true;
+            break;
+            case EntityType::Creeper:
+                return true;
+            break;
+            case EntityType::Skeleton:
+                return true;
+            break;
+            case EntityType::Spider:
+                return true;
+            break;
+            case EntityType::Zombie_Pigman:
+                return true;
+            break;
+            case EntityType::Slime:
+                return true;
+            break;
+            case EntityType::Enderman:
+                return true;
+            break;
+            case EntityType::Silverfish:
+                return true;
+            break;
+            case EntityType::Cave_Spider:
+                return true;
+            break;
+            case EntityType::Ghast:
+                return true;
+            break;
+            case EntityType::Magma_Cube:
+                return true;
+            break;
+            case EntityType::Blaze:
+                return true;
+            break;
+            case EntityType::Zombie_Villager:
+                return true;
+            break;
+            case EntityType::Witch:
+                return true;
+            break;
+            case EntityType::Stray:
+                return true;
+            break;
+            case EntityType::Husk:
+                return true;
+            break;
+            case EntityType::Wither_Skeleton:
+                return true;
+            break;
+            case EntityType::Guardian:
+                return true;
+            break;
+            case EntityType::Elder_Guardian:
+                return true;
+            break;
+            case EntityType::Wither:
+                return true;
+            break;
+            case EntityType::Ender_Dragon:
+                return true;
+            break;
+            case EntityType::Shulker:
+                return true;
+            break;
+            case EntityType::Endermite:
+                return true;
+            break;
+            case EntityType::Vindicator:
+                return true;
+            break;
+            case EntityType::Phantom:
+                return true;
+            break;
+            case EntityType::Ravager:
+                return true;
+            break;
+            case EntityType::Evocation_Villager:
+                return true;
+            break;
+            case EntityType::Vex:
+                return true;
+            break;
+            case EntityType::Drowned:
+                return true;
+            break;
+            case EntityType::Pillager:
+                return true;
+            break;
+            case EntityType::Zombie_Villager_V2:
+                return true;
+            break;
+            case EntityType::Piglin:
+                return true;
+            break;
+            case EntityType::Hoglin:
+                return true;
+            break;
+            case EntityType::Zoglin:
+                return true;
+            break;
+            case EntityType::Piglin_Brute:
+                return true;
+            break;
+        };
+
+        return false;
     };
+
+    auto isNotMob(void) -> bool {
+        auto type = this->getEntityTypeId();
+
+        switch(type) {
+            case EntityType::Dropped_Item:
+                return true;
+            break;
+            case EntityType::Experience_Orb:
+                return true;
+            break;
+            case EntityType::TNT:
+                return true;
+            break;
+            case EntityType::Falling_Block:
+                return true;
+            break;
+            case EntityType::Moving_Block:
+                return true;
+            break;
+            case EntityType::Armor_Stand:
+                return true;
+            break;
+            case EntityType::Bottle_Of_Enchanting:
+                return true;
+            break;
+            case EntityType::Eye_Of_Ender:
+                return true;
+            break;
+            case EntityType::Ender_Crystal:
+                return true;
+            break;
+            case EntityType::Fireworks_Rocket:
+                return true;
+            break;
+            case EntityType::Thrown_Trident:
+                return true;
+            break;
+            case EntityType::Shulker_Bullet:
+                return true;
+            break;
+            case EntityType::Fishing_Hook:
+                return true;
+            break;
+            case EntityType::Dragon_Fireball:
+                return true;
+            break;
+            case EntityType::Arrow:
+                return true;
+            break;
+            case EntityType::Snowball:
+                return true;
+            break;
+            case EntityType::Egg:
+                return true;
+            break;
+            case EntityType::Painting:
+                return true;
+            break;
+            case EntityType::Minecart:
+                return true;
+            break;
+            case EntityType::Fireball:
+                return true;
+            break;
+            case EntityType::Splash_Potion:
+                return true;
+            break;
+            case EntityType::Ender_Pearl:
+                return true;
+            break;
+            case EntityType::Leash_Knot:
+                return true;
+            break;
+            case EntityType::Wither_Skull:
+                return true;
+            break;
+            case EntityType::Boat:
+                return true;
+            break;
+            case EntityType::Wither_Skull_Dangerous:
+                return true;
+            break;
+            case EntityType::Lightning_Bolt:
+                return true;
+            break;
+            case EntityType::Small_Fireball:
+                return true;
+            break;
+            case EntityType::Area_Effect_Cloud:
+                return true;
+            break;
+            case EntityType::Hopper_Minecart:
+                return true;
+            break;
+            case EntityType::TNT_Minecart:
+                return true;
+            break;
+            case EntityType::Chest_Minecart:
+                return true;
+            break;
+            case EntityType::Command_Block_Minecart:
+                return true;
+            break;
+            case EntityType::Lingering_Potion:
+                return true;
+            break;
+            case EntityType::Llama_Spit:
+                return true;
+            break;
+            case EntityType::Evocation_Fang:
+                return true;
+            break;
+            case EntityType::Ice_Bomb:
+                return true;
+            break;
+            case EntityType::Balloon:
+                return true;
+            break;
+        };
+        
+        return false;
+    };
+
 private:
     virtual auto Function0(void) -> void;
     virtual auto Function1(void) -> void;
@@ -82,7 +455,7 @@ public:
     virtual auto updateEntityInside(AABB<float>*) -> void;
     virtual auto isFireImmune(void) -> bool;
 private:
-    virtual auto Function41(void) -> void;
+    virtual auto Function40(void) -> void;
 public:
     virtual auto blockedByShield(uintptr_t*, Actor*) -> void;
     virtual auto canDisableShield(void) -> bool;
