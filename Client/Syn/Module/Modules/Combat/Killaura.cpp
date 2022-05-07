@@ -20,7 +20,7 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive())
             continue;
         
-        if(entity->_getEntityTypeId() == 64 || entity->_getEntityTypeId() == 69)
+        if(entity->getEntityTypeId() == 64 || entity->getEntityTypeId() == 69)
             continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
