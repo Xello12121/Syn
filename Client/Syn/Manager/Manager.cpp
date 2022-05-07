@@ -318,6 +318,7 @@ auto MouseHook_Callback(uint64_t a1, char action, bool isDown, int x, int y, voi
 };
 
 auto Manager::initHooks(void) -> void {
+
     hookMgr = this;
     
     if (kiero::init(kiero::RenderType::D3D12) != kiero::Status::Success)
@@ -343,6 +344,8 @@ auto Manager::initHooks(void) -> void {
     
     Utils::debugLog("Manager: Enabling Key Hook");
     MH_EnableHook((void*)sig);
+    
+    /* Mouse Hook */
 
     
     sig = Mem::findSig("48 8B C4 48 89 58 08 48 89 68 10 48 89 70 18 57 41 54 41 55 41 56 41 57 48 83 EC 60 44");
@@ -432,7 +435,7 @@ auto Manager::init(void) -> void {
     auto player = this->getCategory("Player");
 
     if(player != nullptr) {
-        //new AutoSprint(player);
+        new AutoSprint(player);
     };
 
     /* Visuals */
