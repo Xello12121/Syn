@@ -97,23 +97,30 @@ auto Mem::findSig(const char* sig, const char* mod) -> uintptr_t {
 };*/
 
 auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t* {
+
+    auto hwnd = GetModuleHandleA("Minecraft.Windows.exe");
+
+    if(hwnd == NULL)
+        return nullptr;
     
-    auto ptr = baseAddr;
+    auto ptr = (uintptr_t)(hwnd) + baseAddr;
     auto I = 0;
 
     do {
 
-        if(ptr == NULL || *(uintptr_t**)ptr == nullptr)
+        ptr = *(uintptr_t*)ptr;
+
+        if(ptr == NULL)
             return nullptr;
         
-        if(*(uintptr_t*)ptr + offsets[I] == NULL)
+        ptr += offsets[I];
+
+        if(ptr == NULL)
             return nullptr;
         
-        ptr = *(uintptr_t*)ptr + offsets[I];
         I++;
 
     } while(I < offsets.size());
 
-    return (uintptr_t*)ptr;
-
+    return ((I >= offsets.size()) ? (uintptr_t*)ptr : nullptr);
 };
