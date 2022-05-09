@@ -60,6 +60,47 @@ public:
     virtual auto joinCaravan(Actor*) -> void;
     virtual auto hasCaravanTail(void) -> bool;
     virtual auto getCaravanHead(void) -> __int64;
+    virtual auto getArmorValue(void) -> __int64;
+    virtual auto getArmorCoverPercentage(void) -> float;
+    virtual auto getToughnessValue(void) -> __int64;
+    virtual auto hurtArmorSlots(uintptr_t const &,int, std::bitset<4> const &) -> void;
+    virtual auto setDamagedArmor(int, uintptr_t const &) -> void;
+    virtual auto sendArmorDamage(std::bitset<4> const &) -> void;
+    virtual auto sendArmor(std::bitset<4> const &) -> void;
+    virtual auto containerChanged(int) -> void;
+    virtual auto updateEquipment(void) -> void;
+    virtual auto clearEquipment(void) -> __int64;
+    virtual auto getAllArmorID(void) -> __int64;
+    virtual auto getAllHand(void) -> __int64;
+    virtual auto getAllEquipment(void) -> __int64;
+    virtual auto getArmorTypeHash(void) -> __int64;
+    virtual auto dropEquipmentOnDeath(void) -> void;
+    virtual auto dropEquipmentOnDeath(uintptr_t*, int) -> void;
+    virtual auto clearVanishEnchantedItemsOnDeath(void) -> void;
+    virtual auto sendInventory(bool) -> void;
+    virtual auto getDamageAfterEnchantReduction(uintptr_t*, float) -> float;
+    virtual auto getDamageAfterArmorReduction(uintptr_t*, float) -> float;
+    virtual auto getDamageAfterResistanceEffect(uintptr_t*, float) -> float;
+    virtual auto createAIGoals(void) -> bool;
+private:
+    virtual auto Function335(void) -> void;
+public:
+    virtual auto setItemSlot(int, uintptr_t*) -> bool;
+    virtual auto setTransitioningSitting(bool) -> void;
+    virtual auto attackAnimation(Actor *, float) -> void;
+private:
+    virtual auto Function339(void) -> void;
+    virtual auto Function340(void) -> void;
+    virtual auto Function341(void) -> void;
+    virtual auto Function342(void) -> void;
+public:
+    virtual auto ascendLadder(void) -> void;
+    virtual auto ascendBlockByJumping(void) -> void;
+    virtual auto descendBlockByCrouching(void) -> void;
+    virtual auto dropContainer(void) -> void;
+    virtual auto initBodyControl(void) -> __int64;
+    virtual auto jumpFromGround(uintptr_t*) -> void;
+    virtual auto jumpFromGround(void) -> void;
 };
 
 #endif /* CLIENT_SDK_CLASSES_PLAYER */
