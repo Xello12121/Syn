@@ -1,4 +1,6 @@
 #include "AirJump.h"
+#include "../../../Category/Category.h"
+#include "../../../Manager/Manager.h"
 
 auto AirJump::onKey(uint64_t key, bool isDown, bool* cancel) -> void {
     auto instance = MC::getClientInstance();
@@ -15,6 +17,9 @@ auto AirJump::onKey(uint64_t key, bool isDown, bool* cancel) -> void {
     if(player == nullptr)
         return;
     
-    auto lerpTo = Vec3<float>(0.f, 0.45f, 0.f);
-    player->lerpMotion(&lerpTo);
+    auto vel = player->velocity;
+    vel.y = 0.4f;
+
+    player->ascendBlockByJumping();
+    player->lerpMotion(&vel);
 };
