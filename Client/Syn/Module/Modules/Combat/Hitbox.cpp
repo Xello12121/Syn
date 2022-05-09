@@ -17,6 +17,7 @@ auto Hitbox::onGameMode(GameMode* GM) -> void {
 };
 
 auto Hitbox::onDisable(void) -> void {
+    auto manager = this->category->manager;
     auto player = MC::getLocalPlayer();
 
     if(player == nullptr)
