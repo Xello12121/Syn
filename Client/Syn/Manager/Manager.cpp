@@ -44,6 +44,8 @@ auto GameMode_Tick_Callback(GameMode* GM) -> void {
                     mod->onGameMode(GM);
             };
         };
+    } else {
+        hookMgr->entityMap.clear();
     };
 
     _GameMode_Tick(GM);
@@ -261,7 +263,7 @@ auto hookPresentD3D12(IDXGISwapChain3* ppSwapChain, UINT syncInterval, UINT flag
 
         delete frameContext;
     };
-
+    
     goto out;
 
 out:
@@ -427,7 +429,7 @@ auto Manager::init(void) -> void {
     auto movement = this->getCategory("Movement");
 
     if(movement != nullptr) {
-        //new AirJump(movement);
+        new AirJump(movement);
     };
 
     /* Player */
