@@ -688,9 +688,14 @@ public:
     virtual auto getMapDecorationRotation(void) -> float;
     virtual auto getPassengerYRotation(Actor*) -> float;
     virtual auto getYHeadRot(void) -> float;
+    virtual auto setYHeadRot(float) -> void;
+    virtual auto getInterpolatedBodyYaw(float) -> float;
     virtual auto isWorldBuilder(void) -> bool;
     virtual auto isInCreativeMode(void) -> bool;
     virtual auto isAdventure(void) -> bool;
+    virtual auto isSurvival(void) -> bool;
+    virtual auto isSpectator(void) -> bool;
+    virtual auto isAttackableGamemode(void) -> bool;
     virtual auto add(uintptr_t*) -> bool;
     virtual auto drop(uintptr_t*, bool) -> void;
     virtual auto getInteraction(uintptr_t*, uintptr_t*, Vec3<float>*) -> bool;
