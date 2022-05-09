@@ -24,9 +24,9 @@ auto TestModule::onRender(void) -> void {
             
             auto pos = *player->getPos();
             
-            ImGui::Text(std::string("X: " + std::to_string(pos.x)).c_str());
-            ImGui::Text(std::string("Y: " + std::to_string(pos.y)).c_str());
-            ImGui::Text(std::string("Z: " + std::to_string(pos.z)).c_str());
+            ImGui::Text(std::string("X: " + std::to_string((int)pos.x)).c_str());
+            ImGui::Text(std::string("Y: " + std::to_string((int)(pos.y - 2.f))).c_str());
+            ImGui::Text(std::string("Z: " + std::to_string((int)pos.z)).c_str());
 
             ImGui::TreePop();
 
@@ -38,6 +38,15 @@ auto TestModule::onRender(void) -> void {
             ImGui::Text(std::string("Is Jumping: " + std::string(player->isJumping() ? "True" : "False")).c_str());
             ImGui::Text(std::string("Is Sleeping: " + std::string(player->isSleeping() ? "True" : "False")).c_str());
             ImGui::Text(std::string("Username: " + std::string(player->getNameTag().c_str())).c_str());
+            
+            if(ImGui::Button(std::string("Y-Shift").c_str())) {
+                
+                auto pos = *player->getPos();
+                pos.y += 5.f;
+
+                player->setPos(&pos);
+
+            };
             
             if(ImGui::Button(std::string("Boost").c_str())) {
                 
