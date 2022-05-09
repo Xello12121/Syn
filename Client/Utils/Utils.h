@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <bitset>
 #include <map>
 
 #include "../../../Includes/imgui/imgui.h"
