@@ -6,6 +6,7 @@
 
 class Client;
 class Category;
+class Player;
 class Actor;
 
 class Manager {
