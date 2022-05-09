@@ -11,10 +11,14 @@ auto TestModule::onRender(void) -> void {
     };
     
     auto manager = this->category->manager;
-
     auto player = MC::getLocalPlayer();
 
     if(player != nullptr && ImGui::TreeNode(std::string("Local Player").c_str())) {
+
+        std::ostringstream o;
+        o << std::hex << (uintptr_t*)player << std::endl;
+
+        Utils::debugLog(std::string("Local Player: " + o.str()));
         
         if(ImGui::TreeNode(std::string("Position").c_str())) {
             
@@ -39,6 +43,12 @@ auto TestModule::onRender(void) -> void {
                 
                 auto lerpTo = Vec3(0.f, 1.f, 0.f);
                 player->lerpMotion(&lerpTo);
+
+            };
+
+            if(ImGui::Button(std::string("Jump").c_str())) {
+                
+                player->ascendBlockByJumping();
 
             };
 
