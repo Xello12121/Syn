@@ -57,10 +57,14 @@ auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets)
 
     do {
         
-        if(*(uintptr_t*)ptr + offsets[i] > 0xFFFFFFFFFFFF)
+        if(*(uintptr_t*)ptr + offsets[i] == offsets[i] || *(uintptr_t*)ptr + offsets[i] > 0xFFFFFFFFFFFF)
             break;
         
         ptr = *(uintptr_t*)ptr + offsets[i];
+
+        if(ptr == NULL)
+            break;
+        
         i++;
 
     } while(i < offsets.size());
