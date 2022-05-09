@@ -48,79 +48,24 @@ auto Mem::findSig(const char* sig, const char* mod) -> uintptr_t {
 
 #include "../Utils/Utils.h"
 
-/*auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
-
-    uintptr_t res = baseAddr;
-    auto I = 0;
-    
-    do {
-        
-        //
-
-    } while(res != NULL && I < offsets.size());
-
-    if(res != NULL) {
-        
-        std::ostringstream o;
-        o << std::hex << res << std::endl;
-
-        Utils::debugLog(o.str());
-
-    };
-
-    return (res != baseAddr ? res : NULL);
-};*/
-
-/*auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t {
-    
-    auto hwnd = GetModuleHandleA("Minecraft.Windows.exe");
-    auto addr = (uintptr_t)(hwnd) + baseAddr;
-    auto I = 0;
-
-    if(hwnd == NULL)
-        return 0;
-    
-    do {
-        
-        auto currRes = reinterpret_cast<uintptr_t*>((uintptr_t)(addr) + offsets[I]);
-
-        if(currRes == nullptr) {
-            return 0;
-        };
-        
-        addr = *(uintptr_t*)(addr) + (uintptr_t)offsets[I];
-        I++;
-
-    } while(I < offsets.size());
-
-    return addr;
-};*/
-
 auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets) -> uintptr_t* {
 
-    auto hwnd = GetModuleHandleA("Minecraft.Windows.exe");
-
-    if(hwnd == NULL)
-        return nullptr;
+    auto hwnd = GetModuleHandle("Minecraft.Windows.exe");
     
     auto ptr = (uintptr_t)(hwnd) + baseAddr;
-    auto I = 0;
+    auto i = 0;
 
     do {
-
-        ptr = *(uintptr_t*)ptr;
-
-        if(ptr == NULL)
-            return nullptr;
         
-        ptr += offsets[I];
-
-        if(ptr == NULL)
-            return nullptr;
+        if(*(uintptr_t*)ptr + offsets[i] > 0xFFFFFFFFFFFF)
+            break;
         
-        I++;
+        ptr = *(uintptr_t*)ptr + offsets[i];
+        i++;
 
-    } while(I < offsets.size());
+    } while(i < offsets.size());
 
-    return ((I >= offsets.size()) ? (uintptr_t*)ptr : nullptr);
+    Utils::debugLog(std::to_string(i) + " | " + std::to_string(offsets.size()));
+    
+    return (i == offsets.size() ? (uintptr_t*)ptr : nullptr);
 };
