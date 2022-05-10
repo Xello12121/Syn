@@ -12,44 +12,7 @@ Manager::Manager(Client* client) {
     this->init();
 };
 
-typedef void (__thiscall* Actor_Tick)(Actor*, void*);
-Actor_Tick _Actor_Tick;
-
 Manager* hookMgr = nullptr;
-
-auto Actor_Tick_Callback(Actor* e, void* a2) -> void {
-    
-    if(hookMgr != nullptr)
-        hookMgr->entityMap[e->runtimeId] = e;
-
-    _Actor_Tick(e, a2);
-};
-
-typedef void (__thiscall* GameMode_Tick)(GameMode*);
-GameMode_Tick _GameMode_Tick;
-
-auto GameMode_Tick_Callback(GameMode* GM) -> void {
-    auto player = GM->player;
-    auto level = (player != nullptr ? player->getLevel() : nullptr);
-
-    if(level != nullptr) {
-        for(auto [runtimeId, entity] : hookMgr->entityMap) {
-            if(level->fetchEntity(runtimeId, false) == nullptr)
-                hookMgr->entityMap.erase(runtimeId);
-        };
-
-        for(auto category : hookMgr->categories) {
-            for(auto mod : category->modules) {
-                if(mod->isEnabled)
-                    mod->onGameMode(GM);
-            };
-        };
-    } else {
-        hookMgr->entityMap.clear();
-    };
-
-    _GameMode_Tick(GM);
-};
 
 typedef HRESULT(__thiscall* PresentD3D12)(IDXGISwapChain3*, UINT, UINT);
 PresentD3D12 oPresentD3D12;
@@ -319,6 +282,59 @@ auto MouseHook_Callback(uint64_t a1, char action, bool isDown, int x, int y, voi
         _MouseHook(a1, action, isDown, x, y, a6, a7, a8);
 };
 
+typedef void (__thiscall* Actor_Tick)(Actor*, void*);
+Actor_Tick _Actor_Tick;
+
+auto Actor_Tick_Callback(Actor* e, void* a2) -> void {
+    
+    if(hookMgr != nullptr)
+        hookMgr->entityMap[e->runtimeId] = e;
+
+    _Actor_Tick(e, a2);
+};
+
+typedef void (__thiscall* GameMode_Tick)(GameMode*);
+GameMode_Tick _GameMode_Tick;
+
+auto GameMode_Tick_Callback(GameMode* GM) -> void {
+    auto player = GM->player;
+    auto level = (player != nullptr ? player->getLevel() : nullptr);
+
+    if(level != nullptr) {
+        for(auto [runtimeId, entity] : hookMgr->entityMap) {
+            if(level->fetchEntity(runtimeId, false) == nullptr)
+                hookMgr->entityMap.erase(runtimeId);
+        };
+
+        for(auto category : hookMgr->categories) {
+            for(auto mod : category->modules) {
+                if(mod->isEnabled)
+                    mod->onGameMode(GM);
+            };
+        };
+    } else {
+        hookMgr->entityMap.clear();
+    };
+
+    _GameMode_Tick(GM);
+};
+
+typedef void (__thiscall* Attack)(GameMode*, Actor*);
+Attack _Attack;
+
+auto Attack_Callback(GameMode* GM, Actor* entity) -> void {
+    
+    for(auto category : hookMgr->categories) {
+        for(auto mod : category->modules) {
+            if(mod->isEnabled)
+                mod->onAttack(GM, entity);
+        };
+    };
+
+    _Attack(GM, entity);
+
+};
+
 auto Manager::initHooks(void) -> void {
 
     hookMgr = this;
@@ -382,6 +398,8 @@ auto Manager::initHooks(void) -> void {
     int offset = *reinterpret_cast<int*>(sig + 3);
     uintptr_t** VTable = reinterpret_cast<uintptr_t**>(sig + offset + 7);
 
+    /* GameMode::tick(void) -> void */
+
     if(!sig || VTable == nullptr)
         return Utils::debugLog("Failed to find Sig for GameMode_Tick");
     
@@ -390,10 +408,19 @@ auto Manager::initHooks(void) -> void {
     
     Utils::debugLog("Manager: Enabling GameMode Tick Hook");
     MH_EnableHook((void*)VTable[8]);
+
+    /* GameMode::attack(Actor*) -> bool */
+
+    if(MH_CreateHook((void*)VTable[14], &Attack_Callback, reinterpret_cast<LPVOID*>(&_Attack)) != MH_OK)
+        return Utils::debugLog("Failed to create hook for GameMode_Attack");
+    
+    Utils::debugLog("Manager: Enabling GameMode Attack Hook");
+    MH_EnableHook((void*)VTable[14]);
 };
 
 #include "../Module/Modules/Combat/Killaura.h"
 #include "../Module/Modules/Combat/Hitbox.h"
+#include "../Module/Modules/Combat/BoostHit.h"
 
 #include "../Module/Modules/Movement/AirJump.h"
 
@@ -422,6 +449,7 @@ auto Manager::init(void) -> void {
     if(combat != nullptr) {
         new Killaura(combat);
         new Hitbox(combat);
+        new BoostHit(combat);
     };
 
     /* Movement */

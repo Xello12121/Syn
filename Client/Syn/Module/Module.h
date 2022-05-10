@@ -23,6 +23,8 @@ private:
     virtual auto onDisable(void) -> void {};
 public:
     virtual auto onGameMode(GameMode*) -> void {};
+    virtual auto onAttack(GameMode*, Actor*) -> void {};
+public:
     virtual auto onRender(void) -> void {};
     virtual auto onKey(uint64_t, bool, bool*) -> void {};
 };
