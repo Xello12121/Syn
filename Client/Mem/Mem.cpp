@@ -56,7 +56,7 @@ auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets)
     auto i = 0;
 
     do {
-        
+
         if(*(uintptr_t*)ptr + offsets[i] == offsets[i] || *(uintptr_t*)ptr + offsets[i] > 0xFFFFFFFFFFFF)
             break;
         
@@ -69,7 +69,7 @@ auto Mem::findMultiLvlPtr(uintptr_t baseAddr, std::vector<unsigned int> offsets)
 
     } while(i < offsets.size());
 
-    Utils::debugLog(std::to_string(i) + " | " + std::to_string(offsets.size()));
+    //Utils::debugLog(std::to_string(i) + " | " + std::to_string(offsets.size()));
     
     return (i == offsets.size() ? (uintptr_t*)ptr : nullptr);
 };
