@@ -86,6 +86,127 @@ auto TestModule::onRender(void) -> void {
         ImGui::TreePop();
 
     };
+
+    auto entityMap = this->category->manager->entityMap;
+
+    if(entityMap.size() > 1 && ImGui::TreeNode(std::string("Entity Map").c_str())) {
+        auto players = std::map<uint64_t, Actor*>();
+        
+        auto hostiles = std::map<uint64_t, Actor*>();
+        auto passives = std::map<uint64_t, Actor*>();
+
+        auto others = std::map<uint64_t, Actor*>();
+
+        auto displayMobTree = [](uint64_t runtimeId, Actor* entity) {
+            
+            if(ImGui::TreeNode(std::to_string(runtimeId).c_str())) {
+                
+                ImGui::Text(std::string("Runtime ID: " + std::to_string(runtimeId)).c_str());
+                ImGui::Text(std::string("On Ground: " + std::string(entity->onGround ? "True" : "False")).c_str());
+                ImGui::Text(std::string("Is Jumping: " + std::string(entity->isJumping() ? "True" : "False")).c_str());
+                ImGui::Text(std::string("Is Sleeping: " + std::string(entity->isSleeping() ? "True" : "False")).c_str());
+
+                if(entity->getEntityTypeId() == EntityType::Client_Player)
+                    ImGui::Text(std::string("Username: " + std::string(entity->getNameTag().c_str())).c_str());
+
+                ImGui::TreePop();
+
+            };
+
+        };
+
+        auto displayOtherTree = [](uint64_t runtimeId, Actor* entity) {
+            
+            if(ImGui::TreeNode(std::to_string(runtimeId).c_str())) {
+                
+                ImGui::Text(std::string("Runtime ID: " + std::to_string(runtimeId)).c_str());
+                ImGui::Text(std::string("On Ground: " + std::to_string(entity->onGround)).c_str());
+
+                ImGui::TreePop();
+
+            };
+
+        };
+
+        for(auto [runtimeId, entity] : entityMap) {
+            
+            if(runtimeId == player->runtimeId)
+                continue;
+            
+            if(entity->isNotMob()) {
+                others[runtimeId] = entity;
+                continue;
+            };
+
+            if(entity->getEntityTypeId() == EntityType::Client_Player) {
+                players[runtimeId] = entity;
+                continue;
+            };
+
+            if(entity->isHostileType()) {
+                hostiles[runtimeId] = entity;
+            } else {
+                passives[runtimeId] = entity;
+            };
+
+        };
+
+        if(players.size() > 0 && ImGui::TreeNode(std::string("Players").c_str())) {
+            
+            
+            for(auto [runtimeId, entity] : players) {
+                
+                displayMobTree(runtimeId, entity);
+
+            };
+
+            ImGui::TreePop();
+
+        };
+
+        if((hostiles.size() > 0 || passives.size() > 0) && ImGui::TreeNode(std::string("Mobs").c_str())) {
+            
+            
+            if(passives.size() > 0) {
+                
+                for(auto [runtimeId, entity] : passives) {
+                
+                    displayMobTree(runtimeId, entity);
+
+                };
+
+            };
+
+            if(hostiles.size() > 0) {
+                
+                for(auto [runtimeId, entity] : hostiles) {
+                
+                    displayMobTree(runtimeId, entity);
+
+                };
+                
+            };
+
+            ImGui::TreePop();
+
+        };
+
+        if(others.size() > 0 && ImGui::TreeNode(std::string("Others").c_str())) {
+            
+            
+            for(auto [runtimeId, entity] : others) {
+            
+                displayMobTree(runtimeId, entity);
+
+            };
+
+            ImGui::TreePop();
+
+        };
+
+        ImGui::TreePop();
+
+    };
     
     for(auto category : manager->categories) {
         
