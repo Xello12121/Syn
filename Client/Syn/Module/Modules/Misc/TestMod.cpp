@@ -12,6 +12,7 @@ auto TestModule::onRender(void) -> void {
     
     auto manager = this->category->manager;
     auto player = MC::getLocalPlayer();
+    auto myPos = (player != nullptr ? *player->getPos() : Vec3<float>());
 
     if(player != nullptr && ImGui::TreeNode(std::string("Local Player").c_str())) {
 
@@ -97,7 +98,31 @@ auto TestModule::onRender(void) -> void {
 
         auto others = std::map<uint64_t, Actor*>();
 
-        auto displayMobTree = [](uint64_t runtimeId, Actor* entity) {
+        auto showEntityPosTree = [&](uint64_t runtimeId, Actor* entity) {
+            
+            if(ImGui::TreeNode(std::string("Position").c_str())) {
+            
+                auto pos = *entity->getPos();
+                
+                ImGui::Text(std::string("X: " + std::to_string((int)pos.x)).c_str());
+                ImGui::Text(std::string("Y: " + std::to_string((int)(pos.y - 2.f))).c_str());
+                ImGui::Text(std::string("Z: " + std::to_string((int)pos.z)).c_str());
+
+                auto dX = (myPos.x - pos.x);
+                auto dY = (myPos.y - pos.y);
+                auto dZ = (myPos.z - pos.z);
+
+                auto dist = sqrt(dX * dX + dY * dY + dZ * dZ);
+
+                ImGui::Text(std::string("Distance: " + std::to_string((int)dist)).c_str());
+
+                ImGui::TreePop();
+
+            };
+
+        };
+
+        auto displayMobTree = [&](uint64_t runtimeId, Actor* entity) {
             
             if(ImGui::TreeNode(std::to_string(runtimeId).c_str())) {
                 
@@ -108,6 +133,8 @@ auto TestModule::onRender(void) -> void {
 
                 if(entity->getEntityTypeId() == EntityType::Client_Player)
                     ImGui::Text(std::string("Username: " + std::string(entity->getNameTag().c_str())).c_str());
+                
+                showEntityPosTree(runtimeId, entity);
 
                 ImGui::TreePop();
 
@@ -115,12 +142,14 @@ auto TestModule::onRender(void) -> void {
 
         };
 
-        auto displayOtherTree = [](uint64_t runtimeId, Actor* entity) {
+        auto displayOtherTree = [&](uint64_t runtimeId, Actor* entity) {
             
             if(ImGui::TreeNode(std::to_string(runtimeId).c_str())) {
                 
                 ImGui::Text(std::string("Runtime ID: " + std::to_string(runtimeId)).c_str());
                 ImGui::Text(std::string("On Ground: " + std::to_string(entity->onGround)).c_str());
+
+                showEntityPosTree(runtimeId, entity);
 
                 ImGui::TreePop();
 
@@ -196,7 +225,7 @@ auto TestModule::onRender(void) -> void {
             
             for(auto [runtimeId, entity] : others) {
             
-                displayMobTree(runtimeId, entity);
+                displayOtherTree(runtimeId, entity);
 
             };
 
