@@ -83,7 +83,7 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
 
 auto Killaura::onRenderOptions(void) -> void {
     
-    ImGui::SliderInt(std::string("Delay (MS)").c_str(), &msDelay, 0, 5000);
+    ImGui::SliderInt(std::string("Delay").c_str(), &msDelay, 0, 5000);
 
     ImGui::Spacing();
     
