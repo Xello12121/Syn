@@ -4,6 +4,11 @@
 
 auto Speed::onGameMode(GameMode* GM) -> void {
 
+    if(msDelay > 0 && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - savedTime) <= std::chrono::milliseconds((int)msDelay))
+        return;
+    
+    savedTime = std::chrono::high_resolution_clock::now();
+
     auto instance = MC::getClientInstance();
     auto mcGame = (instance != nullptr ? instance->getMinecraftGame() : nullptr);
 
@@ -58,5 +63,6 @@ auto Speed::onGameMode(GameMode* GM) -> void {
 auto Speed::onRenderOptions(void) -> void {
     
     ImGui::SliderFloat(std::string("Speed").c_str(), &speed, 0.2f, 2.f);
+    ImGui::SliderInt(std::string("Delay (MS)").c_str(), &msDelay, 0, 5000);
 
 };
