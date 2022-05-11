@@ -1,4 +1,6 @@
 #include "Nuker.h"
+#include "../../../Category/Category.h"
+#include "../../../Manager/Manager.h"
 
 auto Nuker::onStartDestroyBlock(GameMode* GM, Vec3<int>* blockPos, uint8_t blockFace, bool* p3) -> void {
     
@@ -7,7 +9,7 @@ auto Nuker::onStartDestroyBlock(GameMode* GM, Vec3<int>* blockPos, uint8_t block
             for(auto z = -range; z < range; z++) {
                 
                 auto currPos = Vec3<int>(blockPos->x + x, blockPos->y + y, blockPos->z + z);
-                GM->destroyBlock(&currPos, blockFace);
+                GM->_creativeDestroyBlock(&currPos, blockFace);
 
             };
         };
