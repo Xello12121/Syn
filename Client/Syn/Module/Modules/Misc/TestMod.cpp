@@ -16,11 +16,6 @@ auto TestModule::onRender(void) -> void {
 
     if(player != nullptr && ImGui::TreeNode(std::string("Local Player").c_str())) {
 
-        std::ostringstream o;
-        o << std::hex << (uintptr_t*)player << std::endl;
-
-        Utils::debugLog(std::string("Local Player: " + o.str()));
-        
         if(ImGui::TreeNode(std::string("Position").c_str())) {
             
             auto pos = *player->getPos();
