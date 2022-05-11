@@ -24,6 +24,8 @@ private:
 public:
     virtual auto onGameMode(GameMode*) -> void {};
     virtual auto onAttack(GameMode*, Actor*) -> void {};
+    virtual auto onStartDestroyBlock(GameMode*, Vec3<int>*, uint8_t, bool*) -> void {};
+    virtual auto onContinueDestroyBlock(GameMode*, Vec3<int>*, uint8_t blockFace, Vec3<float>*, bool*) -> void {};
 public:
     virtual auto onRender(void) -> void {};
     virtual auto onRenderOptions(void) -> void {};

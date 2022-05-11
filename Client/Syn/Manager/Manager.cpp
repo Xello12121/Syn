@@ -319,6 +319,38 @@ auto GameMode_Tick_Callback(GameMode* GM) -> void {
     _GameMode_Tick(GM);
 };
 
+typedef void (__thiscall* StartDestroyBlock)(GameMode*, Vec3<int>*, uint8_t, bool*);
+StartDestroyBlock _StartDestroyBlock;
+
+auto StartDestroyBlock_Callback(GameMode* GM, Vec3<int>* blockPos, uint8_t blockFace, bool* p3) -> void {
+
+    for(auto category : hookMgr->categories) {
+        for(auto mod : category->modules) {
+            if(mod->isEnabled)
+                mod->onStartDestroyBlock(GM, blockPos, blockFace, p3);
+        };
+    };
+    
+    _StartDestroyBlock(GM, blockPos, blockFace, p3);
+
+};
+
+typedef void (__thiscall* ContinueDestroyBlock)(GameMode*, Vec3<int>*, uint8_t, Vec3<float>*, bool*);
+ContinueDestroyBlock _ContinueDestroyBlock;
+
+auto ContinueDestroyBlock_Callback(GameMode* GM, Vec3<int>* blockPos, uint8_t blockFace, Vec3<float>* p3, bool* p4) -> void {
+
+    for(auto category : hookMgr->categories) {
+        for(auto mod : category->modules) {
+            if(mod->isEnabled)
+                mod->onContinueDestroyBlock(GM, blockPos, blockFace, p3, p4);
+        };
+    };
+    
+    _ContinueDestroyBlock(GM, blockPos, blockFace, p3, p4);
+
+};
+
 typedef void (__thiscall* Attack)(GameMode*, Actor*);
 Attack _Attack;
 
@@ -409,6 +441,22 @@ auto Manager::initHooks(void) -> void {
     Utils::debugLog("Manager: Enabling GameMode Tick Hook");
     MH_EnableHook((void*)VTable[8]);
 
+    /* GameMode::startDestroyBlock(BlockPos*, uint8_t, bool*) > bool */
+
+    if(MH_CreateHook((void*)VTable[1], &StartDestroyBlock_Callback, reinterpret_cast<LPVOID*>(&_StartDestroyBlock)) != MH_OK)
+        return Utils::debugLog("Failed to create hook for GameMode_StartDestroyBlock");
+    
+    Utils::debugLog("Manager: Enabling GameMode StartDestroyBlock Hook");
+    MH_EnableHook((void*)VTable[1]);
+
+    /* GameMode::continueDestroyBlock(BlockPos*, uint8_t, Vec3<float>*, bool*) > bool */
+
+    if(MH_CreateHook((void*)VTable[3], &ContinueDestroyBlock_Callback, reinterpret_cast<LPVOID*>(&_ContinueDestroyBlock)) != MH_OK)
+        return Utils::debugLog("Failed to create hook for GameMode_ContinueDestroyBlock");
+    
+    Utils::debugLog("Manager: Enabling GameMode ContinueDestroyBlock Hook");
+    MH_EnableHook((void*)VTable[3]);
+
     /* GameMode::attack(Actor*) -> bool */
 
     if(MH_CreateHook((void*)VTable[14], &Attack_Callback, reinterpret_cast<LPVOID*>(&_Attack)) != MH_OK)
@@ -426,6 +474,7 @@ auto Manager::initHooks(void) -> void {
 #include "../Module/Modules/Movement/Speed.h"
 
 #include "../Module/Modules/Player/AutoSprint.h"
+#include "../Module/Modules/Player/Nuker.h"
 
 #include "../Module/Modules/Visuals/TabGui.h"
 #include "../Module/Modules/Visuals/ClickGui.h"
@@ -468,6 +517,7 @@ auto Manager::init(void) -> void {
 
     if(player != nullptr) {
         new AutoSprint(player);
+        new Nuker(player);
     };
 
     /* Visuals */

@@ -25,12 +25,17 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
+        auto add = true;
+        
         if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
-            continue;
+            add = false;
         
         if(entity->isHostileType() && !attackHostiles)
-            continue;
+            add = false;
         else if(!entity->isHostileType() && !attackPassives)
+            add = false;
+        
+        if(!add)
             continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
@@ -48,12 +53,17 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
+        auto add = true;
+        
         if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
-            continue;
+            add = false;
         
         if(entity->isHostileType() && !attackHostiles)
-            continue;
+            add = false;
         else if(!entity->isHostileType() && !attackPassives)
+            add = false;
+        
+        if(!add)
             continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
