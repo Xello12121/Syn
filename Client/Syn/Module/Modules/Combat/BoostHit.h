@@ -10,6 +10,7 @@ public:
     };
 public:
     auto onAttack(GameMode*, Actor*) -> void override;
+    auto onRenderOptions(void) -> void override;
 private:
     float boost = 1.2f;
 };
