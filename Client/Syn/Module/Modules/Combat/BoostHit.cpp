@@ -25,3 +25,9 @@ auto BoostHit::onAttack(GameMode* GM, Actor* entity) -> void {
     player->velocity = (Vec3<float>(cos((yaw) * (3.14 / 180.0f)) * speed, player->velocity.y ,sin((yaw) * (3.14 / 180.0f)) * speed));
 
 };
+
+auto BoostHit::onRenderOptions(void) -> void {
+    
+    ImGui::SliderFloat(std::string("Boost").c_str(), &boost, 0.2f, 4.f);
+
+};
