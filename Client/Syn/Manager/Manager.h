@@ -17,8 +17,7 @@ public:
 public:
     std::map<uint64_t, Actor*> entityMap;
     std::map<uint64_t, bool> keyMap;
-public:
-    Vec2<int> mousePos;
+    std::map<char, std::pair<Vec2<int>, bool>> mouseData;
 public:
     Manager(Client*);
 public:
