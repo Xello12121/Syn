@@ -12,6 +12,10 @@ public:
     virtual auto onGameMode(GameMode*) -> void override;
     virtual auto onRenderOptions(void) -> void override;
 private:
+    bool attackPlayers = true;
+    bool attackHostiles = true;
+    bool attackPassives = true;
+private:
     int msDelay = 0;
     std::chrono::time_point<std::chrono::steady_clock> savedTime = std::chrono::high_resolution_clock::now();
 };
