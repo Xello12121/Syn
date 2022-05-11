@@ -24,6 +24,17 @@ public:
     virtual auto interact(Actor*, Vec3<float>*) -> bool;
     virtual auto attack(Actor*) -> bool;
     virtual auto releaseUsingItem(void) -> void;
+public:
+    auto _creativeDestroyBlock(Vec3<int>* blockPos, uint8_t blockFace) -> void {
+        using CreativeDestroyBlock = void (__thiscall*)(GameMode*, Vec3<int>*, uint8_t);
+        static auto _CreativeDestroyBlock = (CreativeDestroyBlock)nullptr;
+
+        if(_CreativeDestroyBlock == nullptr)
+            _CreativeDestroyBlock = (CreativeDestroyBlock)(Mem::findSig("40 53 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 44 24 ? 41 ? ? ? 48 8B FA"));
+
+        if(_CreativeDestroyBlock != nullptr)
+            _CreativeDestroyBlock(this, blockPos, blockFace);
+    };
 };
 
 #endif /* CLIENT_SDK_CLASSES_GAMEMODE */
