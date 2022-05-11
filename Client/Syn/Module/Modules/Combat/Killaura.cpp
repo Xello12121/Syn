@@ -28,6 +28,21 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(entity->getEntityTypeId() == 64 || entity->getEntityTypeId() == 69)
             continue;
         
+        if(!entity->isNotMob()) {
+            if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
+                continue;
+            
+            auto isHostile = entity->isHostileType();
+            
+            if(isHostile) {
+                if(!attackHostiles)
+                    continue;
+            } else {
+                if(!attackPassives)
+                    continue;
+            };
+        };
+        
         auto dist = getDistBetween(myPos, *entity->getPos());
         
         if(dist <= 12.f)
@@ -43,6 +58,24 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive())
             continue;
         
+        if(entity->getEntityTypeId() == 64 || entity->getEntityTypeId() == 69)
+            continue;
+        
+        if(!entity->isNotMob()) {
+            if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
+                continue;
+            
+            auto isHostile = entity->isHostileType();
+            
+            if(isHostile) {
+                if(!attackHostiles)
+                    continue;
+            } else {
+                if(!attackPassives)
+                    continue;
+            };
+        };
+        
         auto dist = getDistBetween(myPos, *entity->getPos());
         
         if(dist == distances[0] || (distances.size() >= 2 ? dist == distances[1] : distances.back()) || (distances.size() >= 3 ? dist == distances[2] : distances.back())) {
@@ -55,5 +88,14 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
 auto Killaura::onRenderOptions(void) -> void {
     
     ImGui::SliderInt(std::string("Delay (MS)").c_str(), &msDelay, 0, 5000);
+
+    ImGui::Spacing();
+    
+    ImGui::Checkbox(std::string("Players").c_str(), &attackPlayers);
+
+    ImGui::Spacing();
+    
+    ImGui::Checkbox(std::string("Hostiles").c_str(), &attackHostiles);
+    ImGui::Checkbox(std::string("Passives").c_str(), &attackPassives);
 
 };
