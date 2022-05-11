@@ -25,15 +25,18 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
-        auto add = true;
+        auto add = false;
         
-        if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
-            add = false;
+        if(entity->getEntityTypeId() == EntityType::Client_Player && attackPlayers)
+            add = true;
         
-        if(entity->isHostileType() && !attackHostiles)
-            add = false;
-        else if(!entity->isHostileType() && !attackPassives)
-            add = false;
+        if(entity->isHostileType()) {
+            if(attackHostiles)
+                add = true;
+        } else {
+            if(attackPassives)
+                add = true;
+        };
         
         if(!add)
             continue;
@@ -53,15 +56,18 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
-        auto add = true;
+        auto add = false;
         
-        if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
-            add = false;
+        if(entity->getEntityTypeId() == EntityType::Client_Player && attackPlayers)
+            add = true;
         
-        if(entity->isHostileType() && !attackHostiles)
-            add = false;
-        else if(!entity->isHostileType() && !attackPassives)
-            add = false;
+        if(entity->isHostileType()) {
+            if(attackHostiles)
+                add = true;
+        } else {
+            if(attackPassives)
+                add = true;
+        };
         
         if(!add)
             continue;
