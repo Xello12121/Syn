@@ -22,26 +22,16 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
     auto distances = std::vector<float>();
 
     for(auto [runtimeId, entity] : this->category->manager->entityMap) {
-        if(player->runtimeId == runtimeId || !entity->isAlive())
+        if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
-        if(entity->getEntityTypeId() == 64 || entity->getEntityTypeId() == 69)
+        if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
             continue;
         
-        if(!entity->isNotMob()) {
-            if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
-                continue;
-            
-            auto isHostile = entity->isHostileType();
-            
-            if(isHostile) {
-                if(!attackHostiles)
-                    continue;
-            } else {
-                if(!attackPassives)
-                    continue;
-            };
-        };
+        if(entity->isHostileType() && !attackHostiles)
+            continue;
+        else if(!entity->isHostileType() && !attackPassives)
+            continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
         
@@ -55,26 +45,16 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         return;
     
     for(auto [runtimeId, entity] : this->category->manager->entityMap) {
-        if(player->runtimeId == runtimeId || !entity->isAlive())
+        if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
-        if(entity->getEntityTypeId() == 64 || entity->getEntityTypeId() == 69)
+        if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
             continue;
         
-        if(!entity->isNotMob()) {
-            if(entity->getEntityTypeId() == EntityType::Client_Player && !attackPlayers)
-                continue;
-            
-            auto isHostile = entity->isHostileType();
-            
-            if(isHostile) {
-                if(!attackHostiles)
-                    continue;
-            } else {
-                if(!attackPassives)
-                    continue;
-            };
-        };
+        if(entity->isHostileType() && !attackHostiles)
+            continue;
+        else if(!entity->isHostileType() && !attackPassives)
+            continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
         
