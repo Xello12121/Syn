@@ -63,6 +63,6 @@ auto Speed::onGameMode(GameMode* GM) -> void {
 auto Speed::onRenderOptions(void) -> void {
     
     ImGui::SliderFloat(std::string("Speed").c_str(), &speed, 0.1f, 2.f);
-    ImGui::SliderInt(std::string("Delay (MS)").c_str(), &msDelay, 0, 5000);
+    ImGui::SliderInt(std::string("Delay").c_str(), &msDelay, 0, 5000);
 
 };
