@@ -2,6 +2,13 @@
 #include "../../../Category/Category.h"
 #include "../../../Manager/Manager.h"
 
+auto Hitbox::onRenderOptions(void) -> void {
+    
+    ImGui::SliderFloat(std::string("Width").c_str(), &size.x, 0.f, 10.f);
+    ImGui::SliderFloat(std::string("Height").c_str(), &size.y, 0.f, 10.f);
+
+};
+
 auto Hitbox::onGameMode(GameMode* GM) -> void {
     auto player = GM->player;
     
@@ -12,7 +19,7 @@ auto Hitbox::onGameMode(GameMode* GM) -> void {
         if(types.find(entity->getEntityTypeId()) == types.end())
             types[entity->getEntityTypeId()] = Vec2<float>(entity->collision.x, entity->collision.y);
         
-        entity->setSize(2.f, 6.f);
+        entity->setSize(size.x, size.y);
     };
 };
 
