@@ -423,6 +423,7 @@ auto Manager::initHooks(void) -> void {
 #include "../Module/Modules/Combat/BoostHit.h"
 
 #include "../Module/Modules/Movement/AirJump.h"
+#include "../Module/Modules/Movement/Speed.h"
 
 #include "../Module/Modules/Player/AutoSprint.h"
 
@@ -458,6 +459,7 @@ auto Manager::init(void) -> void {
 
     if(movement != nullptr) {
         new AirJump(movement);
+        new Speed(movement);
     };
 
     /* Player */

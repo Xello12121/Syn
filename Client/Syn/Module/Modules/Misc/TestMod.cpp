@@ -90,7 +90,7 @@ auto TestModule::onRender(void) -> void {
 
     auto entityMap = this->category->manager->entityMap;
 
-    if(entityMap.size() > 1 && ImGui::TreeNode(std::string("Entity Map").c_str())) {
+    if(player != nullptr && entityMap.size() > 1 && ImGui::TreeNode(std::string("Entity Map").c_str())) {
         auto players = std::map<uint64_t, Actor*>();
         
         auto hostiles = std::map<uint64_t, Actor*>();
@@ -256,6 +256,14 @@ auto TestModule::onRender(void) -> void {
 
                     if(ImGui::Button(std::string(mod->isEnabled ? "Disable" : "Enable").c_str())) {
                         mod->isEnabled = !mod->isEnabled;
+                    };
+
+                    if(ImGui::TreeNode(std::string("Options").c_str())) {
+
+                        mod->onRenderOptions();
+
+                        ImGui::TreePop();
+
                     };
                     
                     ImGui::TreePop();

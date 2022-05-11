@@ -26,6 +26,8 @@ public:
     virtual auto onAttack(GameMode*, Actor*) -> void {};
 public:
     virtual auto onRender(void) -> void {};
+    virtual auto onRenderOptions(void) -> void {};
+public:
     virtual auto onKey(uint64_t, bool, bool*) -> void {};
 };
 

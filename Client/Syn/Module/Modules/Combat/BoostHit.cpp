@@ -1,6 +1,4 @@
 #include "BoostHit.h"
-#include "../../../Category/Category.h"
-#include "../../../Manager/Manager.h"
 
 auto BoostHit::onAttack(GameMode* GM, Actor* entity) -> void {
     
@@ -16,7 +14,7 @@ auto BoostHit::onAttack(GameMode* GM, Actor* entity) -> void {
     auto dist = sqrt(dX * dX + dY * dY + dZ * dZ);
     auto angles = Vec2<float>(-(float)atan2(dY, dist) * (180.f / 3.14), (float)atan2(dZ, dX) * (180.f / 3.14) + 90.f);
     
-    auto tooClose = (dist <= 2.f);
+    auto tooClose = (dist <= 3.6f);
     auto yaw = angles.y + (tooClose ? -90.f : 90.f);
 
     auto speed = this->boost;
