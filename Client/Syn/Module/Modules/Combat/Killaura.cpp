@@ -11,6 +11,11 @@ auto getDistBetween(Vec3<float> posA, Vec3<float> posB) -> float {
 };
 
 auto Killaura::onGameMode(GameMode* GM) -> void {
+    if(msDelay > 0 && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - savedTime) <= std::chrono::milliseconds((int)msDelay))
+        return;
+    
+    savedTime = std::chrono::high_resolution_clock::now();
+
     auto player = GM->player;
     auto myPos = *player->getPos();
 
@@ -45,4 +50,10 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
             player->swing();
         };
     };
+};
+
+auto Killaura::onRenderOptions(void) -> void {
+    
+    ImGui::SliderInt(std::string("Delay (MS)").c_str(), &msDelay, 0, 5000);
+
 };
