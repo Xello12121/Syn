@@ -31,7 +31,7 @@ auto TabGui::onRender(void) -> void {
 
     auto I = 0;
     auto cRectLen = 0.f;
-    auto fontSize = this->getScale();
+    auto fontSize = 2.f; //this->getScale();
 
     RenderUtils::setDrawList(ImGui::GetForegroundDrawList());
 
