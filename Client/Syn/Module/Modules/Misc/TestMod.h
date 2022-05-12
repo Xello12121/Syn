@@ -6,14 +6,10 @@
 class TestModule : public Module {
 public:
     TestModule(Category* c) : Module(c, "TestModule") {
-        this->isEnabled = true;
+        //
     };
 public:
     auto onRender(void) -> void override;
-    auto onEnable(void) -> void override;
-    auto onDisable(void) -> void override;
-private:
-    bool updatedWindowSize = false;
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULES_MISC_TESTMOD */
