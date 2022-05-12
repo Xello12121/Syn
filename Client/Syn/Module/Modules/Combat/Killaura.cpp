@@ -74,7 +74,7 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         
         auto dist = getDistBetween(myPos, *entity->getPos());
         
-        if(dist == distances[0] || (distances.size() >= 2 ? dist == distances[1] : distances.back()) || (distances.size() >= 3 ? dist == distances[2] : distances.back())) {
+        if(dist == distances[0] || (distances.size() > 1 ? dist == distances[0] : dist == distances[1]) || (distances.size() > 2 ? dist == distances[1] : dist == distances[2])) {
             GM->attack(entity);
             player->swing();
         };
