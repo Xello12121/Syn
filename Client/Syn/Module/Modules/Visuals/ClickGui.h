@@ -11,8 +11,9 @@ public:
     };
 public:
     virtual auto onRender(void) -> void override;
+    virtual auto onEnable(void) -> void override;
 private:
-    bool setSize = true;
+    bool updatedWindowSize = false;
 };
 
 #endif /* CLIENT_SYN_MODULE_MODULES_VISUALS_CLICKGUI */
