@@ -70,7 +70,7 @@ auto TabGui::onRender(void) -> void {
         for(auto mod : modules) {
             auto calcSize = RenderUtils::getTextSize(mod->name, fontSize);
             
-            auto textPos = ImVec2(12.f + cRectLen, I * (fontSize * 10.f) + 10.f);
+            auto textPos = ImVec2(14.f + cRectLen, I * (fontSize * 10.f) + 10.f);
             RenderUtils::drawText(mod->name, fontSize, textPos, mod->isEnabled ? ImColor(50.f, 168.f, 82.f, alpha) : ImColor(255.f, 255.f, 255.f, alpha));
 
             if(calcSize.x > mRectLen)
@@ -80,15 +80,15 @@ auto TabGui::onRender(void) -> void {
         };
 
         RenderUtils::setDrawList(ImGui::GetBackgroundDrawList());
-        RenderUtils::fillRect(ImVec4(12.f + cRectLen, 10.f, (12.f + cRectLen) + mRectLen, modules.size() * (fontSize * 10.f) + 10.f), ImColor(21.f, 21.f, 21.f, alpha), 5.f);
+        RenderUtils::fillRect(ImVec4(12.f + cRectLen, 10.f, (16.f + cRectLen) + mRectLen, modules.size() * (fontSize * 10.f) + 10.f), ImColor(21.f, 21.f, 21.f, alpha), 5.f);
 
         if(this->selectedMod) {
             auto calcSize = RenderUtils::getTextSize(modules.at(selModIndex)->name, fontSize);
-            auto targetXOff = (12.f + cRectLen) + mRectLen;
+            auto targetXOff = (16.f + cRectLen) + mRectLen;
 
             if(selModAnimOff < (targetXOff)) {
                 if(selModAnimOff <= 0.f)
-                    selModAnimOff = 12.f + cRectLen;
+                    selModAnimOff = 16.f + cRectLen;
                 
                 selModAnimOff += 5.f;
             };
