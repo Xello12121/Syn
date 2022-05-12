@@ -88,9 +88,6 @@ auto Killaura::onRenderOptions(void) -> void {
     ImGui::Spacing();
     
     ImGui::Checkbox(std::string("Players").c_str(), &attackPlayers);
-
-    ImGui::Spacing();
-    
     ImGui::Checkbox(std::string("Hostiles").c_str(), &attackHostiles);
     ImGui::Checkbox(std::string("Passives").c_str(), &attackPassives);
 
