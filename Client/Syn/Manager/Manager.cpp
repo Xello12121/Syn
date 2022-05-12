@@ -525,8 +525,8 @@ auto Manager::init(void) -> void {
     auto visuals = this->getCategory("Visuals");
 
     if(visuals != nullptr) {
-        //new TabGui(visuals);
-        //new ClickGui(visuals);
+        new TabGui(visuals);
+        new ClickGui(visuals);
     };
 
     /* World */
