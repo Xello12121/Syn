@@ -26,6 +26,8 @@ public:
 public:
     auto getCategory(std::string) -> Category*;
     auto getCategory(size_t) -> Category*;
+public:
+    auto isUsingKey(uint64_t) -> bool;
 };
 
 #endif /* CLIENT_SYN_MANAGER_MANAGER */
