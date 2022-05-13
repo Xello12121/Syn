@@ -16,6 +16,8 @@ public:
     Module(Category*, std::string);
 public:
     auto baseTick(void) -> void;
+    auto setState(bool) -> void;
+    auto setKey(uint64_t) -> void;
 public:
     virtual auto onTick(void) -> void {};
 private:
