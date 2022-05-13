@@ -475,6 +475,7 @@ auto Manager::initHooks(void) -> void {
 
 #include "../Module/Modules/Player/AutoSprint.h"
 #include "../Module/Modules/Player/Nuker.h"
+#include "../Module/Modules/Player/DirectionalPhase.h"
 
 #include "../Module/Modules/Visuals/TabGui.h"
 #include "../Module/Modules/Visuals/ClickGui.h"
@@ -518,6 +519,7 @@ auto Manager::init(void) -> void {
     if(player != nullptr) {
         new AutoSprint(player);
         new Nuker(player);
+        new DirectionalPhase(player);
     };
 
     /* Visuals */
@@ -563,4 +565,15 @@ auto Manager::getCategory(size_t i) -> Category* {
         return nullptr;
     
     return this->categories.at(i);
+};
+
+auto Manager::isUsingKey(uint64_t key) -> bool {
+    
+    for(auto [k, isDown] : this->keyMap) {
+        if(k == key)
+            return isDown;
+    };
+    
+    return false;
+    
 };
