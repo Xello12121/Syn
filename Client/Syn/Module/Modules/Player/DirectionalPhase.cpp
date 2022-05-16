@@ -34,6 +34,16 @@ auto DirectionalPhase::onGameMode(GameMode* GM) -> void {
     player->setPos(&myPos);
     player->velocity = Vec3<float>(oMotion.x, 0.f, oMotion.z);
 
+    player->setFieldOfViewModifier(3.f);
+};
+
+auto DirectionalPhase::onDisable(void) -> void {
+    auto player = MC::getLocalPlayer();
+
+    if(player == nullptr)
+        return;
+    
+    player->setFieldOfViewModifier(1.f);
 };
 
 auto DirectionalPhase::onRenderOptions(void) -> void {
