@@ -3,17 +3,13 @@
 
 class GuiData {
 private:
-    char pad_0000[24];     //0x0000
+    char pad_0x0000[0x38]; //0x0000
 public:
-    Vec2<float> res;       //0x0018
+	Vec3<float> res;       //0x0038 
 private:
-    char pad_0020[8];      //0x0020
+    char pad_0x0044[0x8];  //0x0044
 public:
-    Vec2<float> scaledRes; //0x0028
-private:
-    char pad_0030[4];      //0x0030
-public:
-    float scale;           //0x0038
+	float scale;           //0x004C
 };
 
 #endif /* CLIENT_SDK_CLASSES_GUIDATA */
