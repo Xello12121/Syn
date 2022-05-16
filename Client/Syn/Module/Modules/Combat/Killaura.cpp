@@ -25,21 +25,13 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
-        auto add = false;
+        if(!attackPlayers)
+            if(entity->getEntityTypeId() == EntityType::Client_Player)
+                continue;
         
-        if(entity->getEntityTypeId() == EntityType::Client_Player && attackPlayers)
-            add = true;
-        
-        if(entity->isHostileType()) {
-            if(attackHostiles)
-                add = true;
-        } else {
-            if(attackPassives)
-                add = true;
-        };
-        
-        if(!add)
-            continue;
+        if(!attackMobs)
+            if(!entity->isNotMob() && entity->getEntityTypeId() != EntityType::Client_Player)
+                continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
         
@@ -56,21 +48,13 @@ auto Killaura::onGameMode(GameMode* GM) -> void {
         if(player->runtimeId == runtimeId || !entity->isAlive() || entity->isNotMob())
             continue;
         
-        auto add = false;
+        if(!attackPlayers)
+            if(entity->getEntityTypeId() == EntityType::Client_Player)
+                continue;
         
-        if(entity->getEntityTypeId() == EntityType::Client_Player && attackPlayers)
-            add = true;
-        
-        if(entity->isHostileType()) {
-            if(attackHostiles)
-                add = true;
-        } else {
-            if(attackPassives)
-                add = true;
-        };
-        
-        if(!add)
-            continue;
+        if(!attackMobs)
+            if(!entity->isNotMob() && entity->getEntityTypeId() != EntityType::Client_Player)
+                continue;
         
         auto dist = getDistBetween(myPos, *entity->getPos());
         
@@ -88,7 +72,6 @@ auto Killaura::onRenderOptions(void) -> void {
     ImGui::Spacing();
     
     ImGui::Checkbox(std::string("Players").c_str(), &attackPlayers);
-    ImGui::Checkbox(std::string("Hostiles").c_str(), &attackHostiles);
-    ImGui::Checkbox(std::string("Passives").c_str(), &attackPassives);
+    ImGui::Checkbox(std::string("Mobs").c_str(), &attackMobs);
 
 };
