@@ -15,6 +15,11 @@ public:
         return Mem::fastCall<void, Player*, std::string*>((void*)VTable[392], this, &msg);
     };
 public:
+    auto setFieldOfViewModifier(float v) -> void {
+        auto VTable = *(uintptr_t**)(this);
+        return Mem::fastCall<void, Player*, float>((void*)VTable[422], this, v);
+    };
+public:
     virtual auto _removePassenger(uintptr_t*, bool, bool, bool) -> void;
     virtual auto _onSizeUpdated(void) -> void;
 private:
