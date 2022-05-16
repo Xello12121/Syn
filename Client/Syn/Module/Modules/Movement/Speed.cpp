@@ -57,6 +57,7 @@ auto Speed::onGameMode(GameMode* GM) -> void {
     }
     
     player->velocity = Vec3<float>(cos((yaw) * (3.14 / 180.f)) * speed, player->velocity.y, sin((yaw) * (3.14 / 180.f)) * speed);
+    player->setFieldOfViewModifier(1.2f);
 
 };
 
