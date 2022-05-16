@@ -11,7 +11,7 @@ public:
     };
 public:
     auto getGuiData(void) -> GuiData* {
-        return *(GuiData**)((uintptr_t)(this) + 0x4E8);
+        return (GuiData*)Mem::findMultiLvlPtr(0x05470AA0, { 0x110, 0x20, 0xBC, 0x0 });
     };
 };
 
