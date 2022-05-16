@@ -12,6 +12,8 @@ public:
     auto onTick(void) -> void override;
 public:
     auto onGameMode(GameMode*) -> void override;
+    auto onDisable(void) -> void override;
+public:
     auto onRenderOptions(void) -> void override;
 private:
     float speed = 0.4f;
