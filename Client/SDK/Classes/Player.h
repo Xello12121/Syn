@@ -10,6 +10,11 @@ public:
         *(float*)((uintptr_t)(this) + 0x7C0) = f;
     };
 public:
+    auto displayClientMsg(std::string msg) -> void {
+        auto VTable = *(uintptr_t**)(this);
+        return Mem::fastCall<void, Player*, std::string*>((void*)VTable[392], this, &msg);
+    };
+public:
     virtual auto _removePassenger(uintptr_t*, bool, bool, bool) -> void;
     virtual auto _onSizeUpdated(void) -> void;
 private:
@@ -101,6 +106,28 @@ public:
     virtual auto initBodyControl(void) -> __int64;
     virtual auto jumpFromGround(uintptr_t*) -> void;
     virtual auto jumpFromGround(void) -> void;
+private:
+    virtual auto Function350(void) -> void;
+public:
+    virtual auto newServerAiStep(void) -> void;
+private:
+    virtual auto Function352(void) -> void;
+public:
+    virtual auto dropBags(void) -> void;
+    virtual auto tickDeath(void) -> void;
+    virtual auto updateGliding(void) -> void;
+private:
+    virtual auto Function356(void) -> void;
+    virtual auto Function357(void) -> void;
+public:
+    virtual auto prepareRegion(uintptr_t*) -> void;
+    virtual auto destroyRegion(void) -> void;
+    virtual auto suspendRegion(void) -> void;
+    virtual auto resendAllChunks(void) -> void;
+    virtual auto _fireWillChangeDimension(void) -> void;
+    virtual auto _fireDimensionChanged(void) -> void;
+    virtual auto changeDimensionWithCredits(__int64) -> void;
+    virtual auto tickWorld(__int64) -> void ;
 };
 
 #endif /* CLIENT_SDK_CLASSES_PLAYER */
