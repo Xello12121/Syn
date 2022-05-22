@@ -6,8 +6,8 @@
 class ClickGui : public Module {
 public:
     ClickGui(Category* c) : Module(c, "Click Gui") {
-        this->key = VK_INSERT;
-        this->isEnabled = true;
+        this->setKey(VK_INSERT);
+        this->setState(true);
     };
 public:
     virtual auto onRender(void) -> void override;
