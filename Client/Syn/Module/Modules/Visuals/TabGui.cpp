@@ -38,7 +38,7 @@ auto TabGui::onRender(void) -> void {
     for(auto category : categories) {
         auto calcSize = RenderUtils::getTextSize(category->name, fontSize);
 
-        auto textPos = ImVec2(10.f, I * (fontSize * 10.f) + 10.f);
+        auto textPos = ImVec2(10.f, I * (fontSize * 10.f) + 80.f);
         RenderUtils::drawText(category->name, fontSize, textPos, ImColor(255.f, 255.f, 255.f, alpha));
 
         if(calcSize.x > cRectLen)
@@ -48,7 +48,7 @@ auto TabGui::onRender(void) -> void {
     };
 
     RenderUtils::setDrawList(ImGui::GetBackgroundDrawList());
-    RenderUtils::fillRect(ImVec4(4.f, 10.f, 10.f + cRectLen, categories.size() * (fontSize * 10.f) + 10.f), ImColor(21.f, 21.f, 21.f, alpha), 5.f);
+    RenderUtils::fillRect(ImVec4(4.f, 80.f, 10.f + cRectLen, categories.size() * (fontSize * 10.f) + 80.f), ImColor(21.f, 21.f, 21.f, alpha), 5.f);
 
     if(this->selectedCat) {
         auto calcSize = RenderUtils::getTextSize(categories.at(selCatIndex)->name, fontSize);
@@ -60,7 +60,7 @@ auto TabGui::onRender(void) -> void {
         if(selCatAnimOff > (targetXOff))
             selCatAnimOff = targetXOff;
 
-        RenderUtils::fillRect(ImVec4(5.f, selCatIndex * (fontSize * 10.f) + 10.f, selCatAnimOff, (selCatIndex * (fontSize * 10.f) + calcSize.y) + 10.f), ImColor(32.f, 107.f, 227.f, alpha), 5.f);
+        RenderUtils::fillRect(ImVec4(5.f, selCatIndex * (fontSize * 10.f) + 80.f, selCatAnimOff, (selCatIndex * (fontSize * 10.f) + calcSize.y) + 80.f), ImColor(32.f, 107.f, 227.f, alpha), 5.f);
 
         I = 0;
         auto mRectLen = 0.f;
@@ -70,7 +70,7 @@ auto TabGui::onRender(void) -> void {
         for(auto mod : modules) {
             auto calcSize = RenderUtils::getTextSize(mod->name, fontSize);
             
-            auto textPos = ImVec2(14.f + cRectLen, I * (fontSize * 10.f) + 10.f);
+            auto textPos = ImVec2(14.f + cRectLen, I * (fontSize * 10.f) + 80.f);
             RenderUtils::drawText(mod->name, fontSize, textPos, mod->isEnabled ? ImColor(50.f, 168.f, 82.f, alpha) : ImColor(255.f, 255.f, 255.f, alpha));
 
             if(calcSize.x > mRectLen)
@@ -80,7 +80,7 @@ auto TabGui::onRender(void) -> void {
         };
 
         RenderUtils::setDrawList(ImGui::GetBackgroundDrawList());
-        RenderUtils::fillRect(ImVec4(12.f + cRectLen, 10.f, (16.f + cRectLen) + mRectLen, modules.size() * (fontSize * 10.f) + 10.f), ImColor(21.f, 21.f, 21.f, alpha), 5.f);
+        RenderUtils::fillRect(ImVec4(12.f + cRectLen, 80.f, (16.f + cRectLen) + mRectLen, modules.size() * (fontSize * 10.f) + 80.f), ImColor(21.f, 21.f, 21.f, alpha), 5.f);
 
         if(this->selectedMod) {
             auto calcSize = RenderUtils::getTextSize(modules.at(selModIndex)->name, fontSize);
@@ -96,7 +96,7 @@ auto TabGui::onRender(void) -> void {
             if(selModAnimOff > (targetXOff))
                 selModAnimOff = targetXOff;
 
-            RenderUtils::fillRect(ImVec4(12.f + cRectLen, selModIndex * (fontSize * 10.f) + 10.f, selModAnimOff, (selModIndex * (fontSize * 10.f) + calcSize.y) + 10.f), ImColor(32.f, 107.f, 227.f, alpha), 5.f);
+            RenderUtils::fillRect(ImVec4(12.f + cRectLen, selModIndex * (fontSize * 10.f) + 80.f, selModAnimOff, (selModIndex * (fontSize * 10.f) + calcSize.y) + 80.f), ImColor(32.f, 107.f, 227.f, alpha), 5.f);
         };
     };
 };
